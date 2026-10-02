@@ -6,6 +6,7 @@ import 'providers/auth_provider.dart';
 import 'screens/auth/login_screen.dart';
 import 'screens/cliente/cliente_home.dart';
 import 'screens/comercio/comercio_home.dart';
+import 'screens/comun/splash_screen.dart';
 import 'theme.dart';
 
 Future<void> main() async {
@@ -29,7 +30,7 @@ class MunchifyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: MunchifyTheme.dark(),
       themeMode: ThemeMode.dark,
-      home: const RaizApp(),
+      home: const SplashScreen(siguiente: RaizApp()),
     );
   }
 }

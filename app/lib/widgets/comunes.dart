@@ -1,4 +1,5 @@
 import 'dart:math' as math;
+import 'dart:ui' show ImageFilter;
 
 import 'package:flutter/material.dart';
 
@@ -12,9 +13,6 @@ InputDecoration deco(String etiqueta, {IconData? icono, String? ayuda, String? s
       helperText: ayuda,
       suffixText: sufijo,
       prefixIcon: icono == null ? null : Icon(icono),
-      filled: true,
-      fillColor: MunchifyColors.superficieAlta,
-      border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
     );
 
 void mostrarMensaje(BuildContext context, String texto, {bool error = false}) {
@@ -177,7 +175,7 @@ class TarjetaDato extends StatelessWidget {
         color: MunchifyColors.superficie,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
-          side: const BorderSide(color: Color(0xFF2E2E2E)),
+          side: const BorderSide(color: MunchifyColors.borde),
         ),
         child: Padding(
           padding: const EdgeInsets.all(14),
@@ -217,192 +215,31 @@ class TarjetaDato extends StatelessWidget {
   }
 }
 
-/// Tarjeta de promoción usada en el listado del cliente, con estilo de cupón.
-class TarjetaCampana extends StatelessWidget {
-  final Campana campana;
-  final VoidCallback onTap;
-  const TarjetaCampana({super.key, required this.campana, required this.onTap});
-
-  static const _borde = Color(0xFF2E2E2E);
+/// Superficie oscura tipo cristal: fondo translúcido, borde fino y esquinas suaves.
+class SuperficieCristal extends StatelessWidget {
+  final Widget child;
+  final EdgeInsetsGeometry? padding;
+  final double radio;
+  final VoidCallback? onTap;
+  const SuperficieCristal({super.key, required this.child, this.padding, this.radio = 20, this.onTap});
 
   @override
   Widget build(BuildContext context) {
-    final c = campana;
-    final restante = tiempoRestante(c.fin);
-    final urgente = restante == 'Vence hoy' || restante == 'Vence mañana';
-    final agotandose = c.cantidadDisponible > 0 && c.cuponesRestantes / c.cantidadDisponible <= 0.2;
-
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 7),
-      child: Material(
-        color: MunchifyColors.superficie,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
-          side: const BorderSide(color: _borde),
-        ),
-        clipBehavior: Clip.antiAlias,
-        child: InkWell(
-          onTap: onTap,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              // Encabezado: comercio y título
-              Padding(
-                padding: const EdgeInsets.fromLTRB(14, 14, 14, 12),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Container(
-                      width: 46,
-                      height: 46,
-                      decoration: BoxDecoration(
-                        color: MunchifyColors.primario.withAlpha(28),
-                        borderRadius: BorderRadius.circular(14),
-                      ),
-                      child: Icon(iconoCategoria(c.categoriaNombre), color: MunchifyColors.primario, size: 24),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            (c.comercioNombre ?? '').toUpperCase(),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(
-                              color: MunchifyColors.gris,
-                              fontSize: 11,
-                              fontWeight: FontWeight.w700,
-                              letterSpacing: 0.8,
-                            ),
-                          ),
-                          const SizedBox(height: 3),
-                          Text(
-                            c.titulo,
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 16, height: 1.25),
-                          ),
-                        ],
-                      ),
-                    ),
-                    if (c.miParticipacion != null) ...[
-                      const SizedBox(width: 8),
-                      EstadoChip(c.miParticipacion!),
-                    ],
-                  ],
-                ),
-              ),
-
-              // Beneficio destacado
-              Container(
-                margin: const EdgeInsets.symmetric(horizontal: 14),
-                padding: const EdgeInsets.fromLTRB(14, 12, 10, 12),
-                decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    colors: [MunchifyColors.primario, MunchifyColors.primarioOscuro],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
-                  borderRadius: BorderRadius.circular(14),
-                ),
-                child: Row(
-                  children: [
-                    const Icon(Icons.local_offer_rounded, size: 20, color: Colors.white),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      child: Text(
-                        c.beneficio,
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.w800,
-                          fontSize: 15,
-                          height: 1.25,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 5),
-                      decoration: BoxDecoration(
-                        color: Colors.black.withAlpha(45),
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          const Icon(Icons.stars_rounded, size: 14, color: Colors.white),
-                          const SizedBox(width: 3),
-                          Text(
-                            '+${c.puntosOtorgados} pts',
-                            style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w800, fontSize: 12),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-
-              const SizedBox(height: 14),
-              const _Perforacion(color: _borde),
-
-              // Pie: red social, vigencia y disponibilidad
-              Padding(
-                padding: const EdgeInsets.fromLTRB(14, 12, 14, 14),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Row(
-                      children: [
-                        _Pastilla(
-                          icono: iconoRed(c.redSocial),
-                          texto: redesSociales[c.redSocial] ?? c.redSocial,
-                        ),
-                        const SizedBox(width: 8),
-                        Flexible(
-                          child: _Pastilla(
-                            icono: Icons.schedule_rounded,
-                            texto: restante,
-                            color: urgente ? MunchifyColors.alerta : null,
-                          ),
-                        ),
-                        const Spacer(),
-                        const Icon(Icons.arrow_forward_rounded, size: 20, color: MunchifyColors.primario),
-                      ],
-                    ),
-                    if (c.cantidadDisponible > 0) ...[
-                      const SizedBox(height: 12),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(4),
-                              child: LinearProgressIndicator(
-                                value: (c.cuponesRestantes / c.cantidadDisponible).clamp(0.0, 1.0),
-                                minHeight: 5,
-                                backgroundColor: MunchifyColors.superficieAlta,
-                                color: agotandose ? MunchifyColors.alerta : MunchifyColors.primario,
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: 10),
-                          Text(
-                            agotandose ? '¡Quedan ${c.cuponesRestantes}!' : '${c.cuponesRestantes} disponibles',
-                            style: TextStyle(
-                              fontSize: 12,
-                              fontWeight: FontWeight.w600,
-                              color: agotandose ? MunchifyColors.alerta : MunchifyColors.gris,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ],
-                ),
-              ),
-            ],
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: const Color(0xCC18181B),
+        borderRadius: BorderRadius.circular(radio),
+        border: Border.all(color: MunchifyColors.bordeSuave),
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(radio),
+        child: Material(
+          type: MaterialType.transparency,
+          child: InkWell(
+            onTap: onTap,
+            splashColor: const Color(0x1FFF3B3F),
+            highlightColor: const Color(0x0AFFFFFF),
+            child: padding == null ? child : Padding(padding: padding!, child: child),
           ),
         ),
       ),
@@ -410,7 +247,410 @@ class TarjetaCampana extends StatelessWidget {
   }
 }
 
-/// Etiqueta pequeña con ícono para los datos de la tarjeta.
+/// Barra de navegación inferior flotante con efecto de cristal (desenfoque del contenido).
+class BarraCristal extends StatelessWidget {
+  final NavigationBar child;
+  const BarraCristal({super.key, required this.child});
+
+  @override
+  Widget build(BuildContext context) {
+    return ClipRect(
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
+        child: DecoratedBox(
+          decoration: const BoxDecoration(
+            color: Color(0xB309090B),
+            border: Border(top: BorderSide(color: MunchifyColors.bordeSuave)),
+          ),
+          child: NavigationBarTheme(
+            data: NavigationBarTheme.of(context).copyWith(backgroundColor: Colors.transparent, elevation: 0),
+            child: child,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Espacio que deben dejar al final las listas que pasan por debajo de [BarraCristal].
+const double espacioBarraCristal = 96;
+
+/// Resumen en cuadrícula tipo "bento": puntos del cliente y datos rápidos de las promociones.
+class BentoResumen extends StatelessWidget {
+  final int puntos;
+  final int promociones;
+  final int porVencer;
+  const BentoResumen({super.key, required this.puntos, required this.promociones, required this.porVencer});
+
+  @override
+  Widget build(BuildContext context) {
+    return MediaQuery.withClampedTextScaling(
+      maxScaleFactor: 1.15,
+      child: SizedBox(
+        height: 148,
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            // Celda grande: puntos, con un resplandor rojo como único acento
+            Expanded(
+              flex: 5,
+              child: SuperficieCristal(
+                child: Stack(
+                  children: [
+                    const Positioned(
+                      right: -40,
+                      bottom: -50,
+                      width: 160,
+                      height: 160,
+                      child: DecoratedBox(
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          gradient: RadialGradient(colors: [Color(0x59FF3B3F), Color(0x00FF3B3F)]),
+                        ),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Row(
+                            children: [
+                              Icon(Icons.auto_awesome_outlined, size: 16, color: MunchifyColors.primario),
+                              SizedBox(width: 6),
+                              Text(
+                                'Tus puntos',
+                                style: TextStyle(color: MunchifyColors.gris, fontSize: 12, fontWeight: FontWeight.w600),
+                              ),
+                            ],
+                          ),
+                          const Spacer(),
+                          FittedBox(
+                            fit: BoxFit.scaleDown,
+                            alignment: Alignment.centerLeft,
+                            child: Text(
+                              '$puntos',
+                              style: const TextStyle(
+                                fontSize: 44,
+                                height: 1,
+                                fontWeight: FontWeight.w800,
+                                letterSpacing: -1.5,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          const Text(
+                            'pts para canjear',
+                            style: TextStyle(color: MunchifyColors.gris, fontSize: 12, fontWeight: FontWeight.w500),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              flex: 4,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Expanded(
+                    child: _CeldaBento(
+                      icono: Icons.local_offer_outlined,
+                      valor: '$promociones',
+                      etiqueta: promociones == 1 ? 'promoción' : 'promociones',
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  Expanded(
+                    child: _CeldaBento(
+                      icono: Icons.schedule_outlined,
+                      valor: '$porVencer',
+                      etiqueta: 'por vencer',
+                      color: porVencer > 0 ? MunchifyColors.alerta : null,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _CeldaBento extends StatelessWidget {
+  final IconData icono;
+  final String valor;
+  final String etiqueta;
+  final Color? color;
+  const _CeldaBento({required this.icono, required this.valor, required this.etiqueta, this.color});
+
+  @override
+  Widget build(BuildContext context) {
+    return SuperficieCristal(
+      padding: const EdgeInsets.symmetric(horizontal: 14),
+      child: Row(
+        children: [
+          Icon(icono, size: 20, color: color ?? MunchifyColors.primario),
+          const SizedBox(width: 10),
+          Text(valor, style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w800, color: Colors.white)),
+          const SizedBox(width: 6),
+          Expanded(
+            child: Text(
+              etiqueta,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(color: MunchifyColors.gris, fontSize: 11, fontWeight: FontWeight.w600, height: 1.2),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Tarjeta de promoción del listado del cliente: cupón oscuro tipo cristal con el rojo como acento.
+class TarjetaCampana extends StatelessWidget {
+  final Campana campana;
+  final VoidCallback onTap;
+  const TarjetaCampana({super.key, required this.campana, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    final c = campana;
+    final restante = tiempoRestante(c.fin);
+    final urgente = restante == 'Vence hoy' || restante == 'Vence mañana';
+    final proporcion =
+        c.cantidadDisponible > 0 ? (c.cuponesRestantes / c.cantidadDisponible).clamp(0.0, 1.0) : 0.0;
+    final agotandose = c.cantidadDisponible > 0 && proporcion <= 0.2;
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+      child: SuperficieCristal(
+        onTap: onTap,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            // Encabezado: comercio y título
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 16, 16, 12),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    width: 44,
+                    height: 44,
+                    decoration: BoxDecoration(
+                      color: const Color(0x0DFFFFFF),
+                      borderRadius: BorderRadius.circular(14),
+                      border: Border.all(color: MunchifyColors.bordeSuave),
+                    ),
+                    child: Icon(iconoCategoria(c.categoriaNombre), color: MunchifyColors.primario, size: 22),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          (c.comercioNombre ?? '').toUpperCase(),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                            color: MunchifyColors.gris,
+                            fontSize: 11,
+                            fontWeight: FontWeight.w700,
+                            letterSpacing: 0.8,
+                          ),
+                        ),
+                        const SizedBox(height: 3),
+                        Text(
+                          c.titulo,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w800,
+                            fontSize: 16,
+                            height: 1.25,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  if (c.miParticipacion != null) ...[
+                    const SizedBox(width: 8),
+                    EstadoChip(c.miParticipacion!),
+                  ],
+                ],
+              ),
+            ),
+
+            // Beneficio: panel con un tinte rojo sutil
+            Container(
+              margin: const EdgeInsets.symmetric(horizontal: 16),
+              padding: const EdgeInsets.fromLTRB(14, 12, 10, 12),
+              decoration: BoxDecoration(
+                color: const Color(0x14FF3B3F),
+                borderRadius: BorderRadius.circular(14),
+                border: Border.all(color: const Color(0x40FF3B3F)),
+              ),
+              child: Row(
+                children: [
+                  const Icon(Icons.local_offer_outlined, size: 20, color: MunchifyColors.primario),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Text(
+                      c.beneficio,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w700,
+                        fontSize: 15,
+                        height: 1.25,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 5),
+                    decoration: BoxDecoration(
+                      color: const Color(0x0FFFFFFF),
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(color: MunchifyColors.bordeSuave),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Icon(Icons.star_outline_rounded, size: 15, color: MunchifyColors.primario),
+                        const SizedBox(width: 3),
+                        Text(
+                          '+${c.puntosOtorgados} pts',
+                          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w700, fontSize: 12),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            const SizedBox(height: 14),
+            const _Perforacion(color: MunchifyColors.bordeSuave),
+
+            // Pie: red social, vigencia, disponibilidad y botón de acción
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Row(
+                          children: [
+                            _Pastilla(
+                              icono: iconoRed(c.redSocial),
+                              texto: redesSociales[c.redSocial] ?? c.redSocial,
+                            ),
+                            const SizedBox(width: 8),
+                            Flexible(
+                              child: _Pastilla(
+                                icono: Icons.schedule_outlined,
+                                texto: restante,
+                                color: urgente ? MunchifyColors.alerta : null,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      const _BotonIr(),
+                    ],
+                  ),
+                  if (c.cantidadDisponible > 0) ...[
+                    const SizedBox(height: 14),
+                    Row(
+                      children: [
+                        Expanded(child: _BarraDisponibles(valor: proporcion, alerta: agotandose)),
+                        const SizedBox(width: 10),
+                        Text(
+                          agotandose ? '¡Quedan ${c.cuponesRestantes}!' : '${c.cuponesRestantes} disponibles',
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                            color: agotandose ? MunchifyColors.alerta : MunchifyColors.gris,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// Botón de acción principal de la tarjeta: rojo con degradado sutil y resplandor.
+class _BotonIr extends StatelessWidget {
+  const _BotonIr();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 34,
+      height: 34,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(12),
+        gradient: const LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [MunchifyColors.primario, MunchifyColors.primarioOscuro],
+        ),
+        boxShadow: const [BoxShadow(color: Color(0x4DDC2626), blurRadius: 14, offset: Offset(0, 4))],
+      ),
+      child: const Icon(Icons.arrow_forward_rounded, size: 18, color: Colors.white),
+    );
+  }
+}
+
+/// Barra fina de cupones disponibles.
+class _BarraDisponibles extends StatelessWidget {
+  final double valor;
+  final bool alerta;
+  const _BarraDisponibles({required this.valor, required this.alerta});
+
+  @override
+  Widget build(BuildContext context) {
+    final color = alerta ? MunchifyColors.alerta : MunchifyColors.primario;
+    return Container(
+      height: 4,
+      decoration: BoxDecoration(color: const Color(0x14FFFFFF), borderRadius: BorderRadius.circular(2)),
+      alignment: Alignment.centerLeft,
+      child: FractionallySizedBox(
+        widthFactor: valor <= 0 ? 0.0 : valor.clamp(0.04, 1.0),
+        child: DecoratedBox(
+          decoration: BoxDecoration(
+            color: color,
+            borderRadius: BorderRadius.circular(2),
+            boxShadow: [BoxShadow(color: color.withAlpha(90), blurRadius: 6)],
+          ),
+          child: const SizedBox.expand(),
+        ),
+      ),
+    );
+  }
+}
+
+/// Etiqueta pequeña con ícono de línea, para los datos de la tarjeta.
 class _Pastilla extends StatelessWidget {
   final IconData icono;
   final String texto;
@@ -421,16 +661,17 @@ class _Pastilla extends StatelessWidget {
   Widget build(BuildContext context) {
     final c = color ?? MunchifyColors.gris;
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 5),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       decoration: BoxDecoration(
-        color: color == null ? MunchifyColors.superficieAlta : c.withAlpha(30),
+        color: color == null ? const Color(0x0DFFFFFF) : c.withAlpha(28),
         borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: color == null ? MunchifyColors.bordeSuave : c.withAlpha(80)),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
           Icon(icono, size: 14, color: c),
-          const SizedBox(width: 4),
+          const SizedBox(width: 5),
           Flexible(
             child: Text(
               texto,

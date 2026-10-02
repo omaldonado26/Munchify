@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../../models/models.dart';
+import '../../providers/auth_provider.dart';
 import '../../services/api_service.dart';
 import '../../utils/formatos.dart';
 import '../../widgets/comunes.dart';
@@ -36,8 +38,15 @@ class _ExplorarScreenState extends State<ExplorarScreen> {
     super.dispose();
   }
 
+  /// Promociones que vencen en los próximos 3 días.
+  int _porVencer(List<Campana> lista) {
+    final limite = DateTime.now().add(const Duration(days: 3));
+    return lista.where((c) => c.fin != null && !c.fin!.isAfter(limite)).length;
+  }
+
   @override
   Widget build(BuildContext context) {
+    final puntos = context.watch<AuthProvider>().usuario?.puntos ?? 0;
     return Column(
       children: [
         Padding(
@@ -46,11 +55,11 @@ class _ExplorarScreenState extends State<ExplorarScreen> {
             controller: _buscar,
             textInputAction: TextInputAction.search,
             onSubmitted: (v) => setState(() => _busqueda = v),
-            decoration: deco('Buscar promociones o comercios', icono: Icons.search).copyWith(
+            decoration: deco('Buscar promociones o comercios', icono: Icons.search_rounded).copyWith(
               suffixIcon: _busqueda.isEmpty
                   ? null
                   : IconButton(
-                      icon: const Icon(Icons.clear),
+                      icon: const Icon(Icons.close_rounded),
                       onPressed: () {
                         _buscar.clear();
                         setState(() => _busqueda = '');
@@ -103,9 +112,21 @@ class _ExplorarScreenState extends State<ExplorarScreen> {
                     ])
                   : ListView.builder(
                       physics: const AlwaysScrollableScrollPhysics(),
-                      padding: const EdgeInsets.only(bottom: 16),
-                      itemCount: lista.length,
-                      itemBuilder: (_, i) => TarjetaCampana(
+                      padding: const EdgeInsets.only(bottom: espacioBarraCristal),
+                      itemCount: lista.length + 1,
+                      itemBuilder: (_, indice) {
+                        if (indice == 0) {
+                          return Padding(
+                            padding: const EdgeInsets.fromLTRB(16, 6, 16, 8),
+                            child: BentoResumen(
+                              puntos: puntos,
+                              promociones: lista.length,
+                              porVencer: _porVencer(lista),
+                            ),
+                          );
+                        }
+                        final i = indice - 1;
+                        return TarjetaCampana(
                         campana: lista[i],
                         onTap: () async {
                           await Navigator.push(
@@ -114,7 +135,8 @@ class _ExplorarScreenState extends State<ExplorarScreen> {
                           );
                           if (mounted) setState(() => _version++);
                         },
-                      ),
+                      );
+                      },
                     ),
             ),
           ),

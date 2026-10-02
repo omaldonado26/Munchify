@@ -62,7 +62,7 @@ class _MisCuponesScreenState extends State<MisCuponesScreen> {
                     ])
                   : ListView.builder(
                       physics: const AlwaysScrollableScrollPhysics(),
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                      padding: const EdgeInsets.fromLTRB(16, 4, 16, espacioBarraCristal),
                       itemCount: lista.length,
                       itemBuilder: (_, i) => _TarjetaCupon(cupon: lista[i]),
                     ),

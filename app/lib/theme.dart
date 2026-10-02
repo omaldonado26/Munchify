@@ -1,19 +1,21 @@
 import 'package:flutter/material.dart';
 
-/// Paleta de marca: rojo Munchify sobre negro, con texto blanco (modo oscuro).
+/// Paleta de marca (modo oscuro): negro profundo, texto blanco y rojo Munchify solo como acento.
 class MunchifyColors {
   static const Color primario = Color(0xFFFF3B3F); // rojo Munchify (tenedor del logo)
-  static const Color primarioOscuro = Color(0xFFC62A2E);
+  static const Color primarioOscuro = Color(0xFFDC2626);
   static const Color secundario = Color(0xFFFF8A8C); // rojo claro para acentos secundarios
-  static const Color oscuro = Color(0xFF161616); // negro de marca (fondo del logo)
+  static const Color oscuro = Color(0xFF09090B); // negro profundo de fondo
   static const Color fondo = oscuro;
-  static const Color superficie = Color(0xFF212121); // tarjetas
-  static const Color superficieAlta = Color(0xFF2C2C2C); // campos de formulario, snackbars
-  static const Color claro = Color(0xFFF4F7FA); // blanco del logotipo
+  static const Color superficie = Color(0xFF18181B); // tarjetas
+  static const Color superficieAlta = Color(0xFF27272A); // campos de formulario, snackbars
+  static const Color borde = Color(0xFF27272A); // bordes finos de tarjetas y campos
+  static const Color bordeSuave = Color(0x1AFFFFFF); // blanco al 10 %, para superficies de cristal
+  static const Color claro = Color(0xFFFAFAFA); // texto principal
   static const Color exito = Color(0xFF22C55E);
   static const Color alerta = Color(0xFFFBBF24);
   static const Color error = Color(0xFFF87171);
-  static const Color gris = Color(0xFF9CA3AF);
+  static const Color gris = Color(0xFFA1A1AA); // texto secundario
 }
 
 class MunchifyTheme {
@@ -35,8 +37,8 @@ class MunchifyTheme {
       surfaceContainer: MunchifyColors.superficie,
       surfaceContainerHigh: MunchifyColors.superficieAlta,
       surfaceContainerHighest: MunchifyColors.superficieAlta,
-      outline: Color(0xFF4B4B4B),
-      outlineVariant: Color(0xFF333333),
+      outline: Color(0xFF3F3F46),
+      outlineVariant: MunchifyColors.borde,
       error: MunchifyColors.error,
       onError: MunchifyColors.oscuro,
     );
@@ -53,16 +55,50 @@ class MunchifyTheme {
         elevation: 0,
         centerTitle: false,
       ),
-      cardTheme: const CardThemeData(color: MunchifyColors.superficie, surfaceTintColor: Colors.transparent),
+      cardTheme: CardThemeData(
+        color: MunchifyColors.superficie,
+        surfaceTintColor: Colors.transparent,
+        elevation: 0,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+          side: const BorderSide(color: MunchifyColors.borde),
+        ),
+      ),
       dialogTheme: const DialogThemeData(backgroundColor: MunchifyColors.superficie),
       bottomSheetTheme: const BottomSheetThemeData(backgroundColor: MunchifyColors.superficie),
-      dividerTheme: const DividerThemeData(color: Color(0xFF333333)),
-      navigationBarTheme: NavigationBarThemeData(
+      dividerTheme: const DividerThemeData(color: MunchifyColors.borde),
+      inputDecorationTheme: InputDecorationTheme(
+        filled: true,
+        fillColor: MunchifyColors.superficie,
+        hintStyle: const TextStyle(color: MunchifyColors.gris),
+        prefixIconColor: MunchifyColors.gris,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
+          borderSide: const BorderSide(color: MunchifyColors.borde),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
+          borderSide: const BorderSide(color: MunchifyColors.borde),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
+          borderSide: const BorderSide(color: MunchifyColors.primario, width: 1.5),
+        ),
+      ),
+      chipTheme: ChipThemeData(
         backgroundColor: MunchifyColors.superficie,
-        indicatorColor: MunchifyColors.primario,
+        selectedColor: const Color(0x29FF3B3F),
+        checkmarkColor: MunchifyColors.primario,
+        side: const BorderSide(color: MunchifyColors.borde),
+        shape: const StadiumBorder(),
+        labelStyle: const TextStyle(fontFamily: 'Manrope', color: MunchifyColors.claro, fontWeight: FontWeight.w600),
+      ),
+      navigationBarTheme: NavigationBarThemeData(
+        backgroundColor: MunchifyColors.oscuro,
+        indicatorColor: const Color(0x29FF3B3F),
         surfaceTintColor: Colors.transparent,
         iconTheme: WidgetStateProperty.resolveWith((estados) => IconThemeData(
-              color: estados.contains(WidgetState.selected) ? Colors.white : MunchifyColors.gris,
+              color: estados.contains(WidgetState.selected) ? MunchifyColors.primario : MunchifyColors.gris,
             )),
         labelTextStyle: WidgetStateProperty.resolveWith((estados) => TextStyle(
               fontFamily: 'Manrope',
@@ -76,7 +112,9 @@ class MunchifyTheme {
           backgroundColor: MunchifyColors.primario,
           foregroundColor: Colors.white,
           disabledBackgroundColor: MunchifyColors.superficieAlta,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          shadowColor: const Color(0x4DDC2626),
+          textStyle: const TextStyle(fontFamily: 'Manrope', fontWeight: FontWeight.w700),
         ),
       ),
       floatingActionButtonTheme: const FloatingActionButtonThemeData(

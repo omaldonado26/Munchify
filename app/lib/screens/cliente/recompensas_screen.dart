@@ -97,7 +97,7 @@ class _RecompensasScreenState extends State<RecompensasScreen> {
                     ])
                   : ListView.builder(
                       physics: const AlwaysScrollableScrollPhysics(),
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      padding: const EdgeInsets.fromLTRB(16, 0, 16, espacioBarraCristal),
                       itemCount: lista.length,
                       itemBuilder: (_, i) {
                         final r = lista[i];

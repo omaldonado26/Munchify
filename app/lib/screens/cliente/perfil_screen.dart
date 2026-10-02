@@ -26,7 +26,7 @@ class PerfilScreen extends StatelessWidget {
             await recargar();
           },
           child: ListView(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.fromLTRB(16, 16, 16, espacioBarraCristal),
             children: [
               Center(
                 child: CircleAvatar(
