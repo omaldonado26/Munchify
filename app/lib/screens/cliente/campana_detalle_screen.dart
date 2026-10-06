@@ -61,45 +61,74 @@ class _Encabezado extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final c = campana;
-    return Container(
+    return SuperficieCristal(
       padding: const EdgeInsets.all(18),
-      decoration: BoxDecoration(
-        gradient: const LinearGradient(colors: [MunchifyColors.primario, MunchifyColors.primarioOscuro]),
-        borderRadius: BorderRadius.circular(20),
-      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              Icon(iconoCategoria(c.categoriaNombre), color: Colors.white),
+              Icon(iconoCategoria(c.categoriaNombre), color: MunchifyColors.gris, size: 18),
               const SizedBox(width: 8),
               Expanded(
-                child: Text(c.comercioNombre ?? '',
-                    style: const TextStyle(color: MunchifyColors.superficie, fontWeight: FontWeight.w600)),
+                child: Text(
+                  (c.comercioNombre ?? '').toUpperCase(),
+                  style: const TextStyle(
+                    color: MunchifyColors.gris,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w700,
+                    letterSpacing: 0.6,
+                  ),
+                ),
               ),
             ],
           ),
-          const SizedBox(height: 10),
-          Text(c.titulo, style: const TextStyle(color: MunchifyColors.superficie, fontSize: 22, fontWeight: FontWeight.bold)),
-          const SizedBox(height: 10),
+          const SizedBox(height: 8),
+          Text(
+            c.titulo,
+            style: const TextStyle(color: MunchifyColors.claro, fontSize: 24, height: 1.2, fontWeight: FontWeight.w800),
+          ),
+          const SizedBox(height: 14),
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-            decoration: BoxDecoration(color: MunchifyColors.superficie, borderRadius: BorderRadius.circular(20)),
-            child: Text(c.beneficio,
-                style: const TextStyle(color: MunchifyColors.primario, fontWeight: FontWeight.bold)),
+            width: double.infinity,
+            padding: const EdgeInsets.all(14),
+            decoration: BoxDecoration(
+              color: const Color(0x14FF3B3F),
+              borderRadius: BorderRadius.circular(14),
+              border: Border.all(color: const Color(0x40FF3B3F)),
+            ),
+            child: Row(
+              children: [
+                const Icon(Icons.local_offer_outlined, size: 22, color: MunchifyColors.primario),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Text(
+                    c.beneficio,
+                    style: const TextStyle(
+                      color: MunchifyColors.claro,
+                      fontSize: 17,
+                      height: 1.3,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
           if (c.descripcion != null && c.descripcion!.isNotEmpty) ...[
-            const SizedBox(height: 12),
-            Text(c.descripcion!, style: const TextStyle(color: Colors.white)),
+            const SizedBox(height: 14),
+            Text(c.descripcion!, style: const TextStyle(color: MunchifyColors.claro, fontSize: 15, height: 1.45)),
           ],
           if (c.comercioDireccion != null) ...[
-            const SizedBox(height: 10),
+            const SizedBox(height: 12),
             Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Icon(Icons.place, color: Colors.white70, size: 16),
-                const SizedBox(width: 4),
-                Expanded(child: Text(c.comercioDireccion!, style: const TextStyle(color: Colors.white70))),
+                const Icon(Icons.place_outlined, color: MunchifyColors.gris, size: 18),
+                const SizedBox(width: 6),
+                Expanded(
+                  child: Text(c.comercioDireccion!, style: const TextStyle(color: MunchifyColors.gris, fontSize: 14)),
+                ),
               ],
             ),
           ],
@@ -118,8 +147,6 @@ class _ComoParticipar extends StatelessWidget {
     final c = campana;
     return Card(
       elevation: 0,
-      color: MunchifyColors.superficie,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -127,15 +154,20 @@ class _ComoParticipar extends StatelessWidget {
           children: [
             Text('¿Cómo participar?', style: Theme.of(context).textTheme.titleMedium),
             const SizedBox(height: 10),
-            _fila(iconoRed(c.redSocial), '${tiposAccion[c.tipoAccion] ?? c.tipoAccion} en ${redesSociales[c.redSocial] ?? c.redSocial}'),
+            _fila(iconoRed(c.redSocial),
+                '${tiposAccion[c.tipoAccion] ?? c.tipoAccion} en ${redesSociales[c.redSocial] ?? c.redSocial}'),
             if (c.condiciones != null && c.condiciones!.isNotEmpty) _fila(Icons.rule, c.condiciones!),
             _fila(Icons.attach_file, 'Evidencia: ${tiposEvidencia[c.tipoEvidencia] ?? c.tipoEvidencia}'),
-            _fila(Icons.verified_outlined,
-                c.validacionAutomatica ? 'Cupón inmediato al enviar tu evidencia' : 'El comercio revisará tu evidencia'),
+            _fila(
+                Icons.verified_outlined,
+                c.validacionAutomatica
+                    ? 'Cupón inmediato al enviar tu evidencia'
+                    : 'El comercio revisará tu evidencia'),
             const Divider(height: 24),
             _fila(Icons.event, 'Válida del ${fechaTexto(c.fechaInicio)} al ${fechaTexto(c.fechaFin)}'),
             _fila(Icons.timer_outlined, 'El cupón dura ${c.vigenciaCuponDias} días después de emitirse'),
-            _fila(Icons.confirmation_number_outlined, '${c.cuponesRestantes} de ${c.cantidadDisponible} cupones disponibles'),
+            _fila(Icons.confirmation_number_outlined,
+                '${c.cuponesRestantes} de ${c.cantidadDisponible} cupones disponibles'),
             _fila(Icons.stars_rounded, 'Ganas ${c.puntosOtorgados} puntos Munchify'),
             if (c.comercioInstagram != null && c.comercioInstagram!.isNotEmpty) ...[
               const SizedBox(height: 8),
@@ -159,9 +191,9 @@ class _ComoParticipar extends StatelessWidget {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Icon(icono, size: 20, color: MunchifyColors.primario),
+            Icon(icono, size: 20, color: MunchifyColors.gris),
             const SizedBox(width: 10),
-            Expanded(child: Text(texto)),
+            Expanded(child: Text(texto, style: const TextStyle(fontSize: 15, height: 1.4))),
           ],
         ),
       );
@@ -260,11 +292,18 @@ class _ParticipacionState extends State<_Participacion> {
     final cupon = c.miCupon;
 
     if (cupon != null) {
+      // El aviso refleja el estado real del cupón (activo, canjeado o vencido).
+      final estadoCupon = cupon['estado'].toString();
+      final (colorAviso, iconoAviso, tituloAviso) = switch (estadoCupon) {
+        'activo' => (MunchifyColors.exito, Icons.check_circle, '¡Ya tienes tu cupón!'),
+        'canjeado' => (MunchifyColors.gris, Icons.task_alt, 'Ya usaste este cupón'),
+        _ => (MunchifyColors.gris, Icons.event_busy_outlined, 'Tu cupón venció'),
+      };
       return _Aviso(
-        color: MunchifyColors.exito,
-        icono: Icons.check_circle,
-        titulo: '¡Ya tienes tu cupón!',
-        mensaje: 'Código ${cupon['codigo']} · ${etiquetaEstado(cupon['estado'].toString())}',
+        color: colorAviso,
+        icono: iconoAviso,
+        titulo: tituloAviso,
+        mensaje: 'Código ${cupon['codigo']} · ${etiquetaEstado(estadoCupon)}',
         boton: FilledButton.icon(
           icon: const Icon(Icons.qr_code_2),
           label: const Text('Mostrar QR'),
@@ -312,8 +351,6 @@ class _ParticipacionState extends State<_Participacion> {
 
     return Card(
       elevation: 0,
-      color: MunchifyColors.superficie,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(

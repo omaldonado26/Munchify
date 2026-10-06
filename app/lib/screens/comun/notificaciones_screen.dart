@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 
 import '../../models/models.dart';
 import '../../services/api_service.dart';
+import '../../services/push_service.dart';
 import '../../theme.dart';
+import '../../utils/refresco.dart';
 import '../../utils/formatos.dart';
 import '../../widgets/comunes.dart';
 
@@ -58,7 +60,8 @@ class NotificacionesScreen extends StatelessWidget {
                         backgroundColor: MunchifyColors.primario.withAlpha(30),
                         child: Icon(_icono(n.tipo), color: MunchifyColors.primario),
                       ),
-                      title: Text(n.titulo, style: TextStyle(fontWeight: n.leida ? FontWeight.normal : FontWeight.bold)),
+                      title:
+                          Text(n.titulo, style: TextStyle(fontWeight: n.leida ? FontWeight.normal : FontWeight.bold)),
                       subtitle: Text(n.mensaje),
                       trailing: Text(haceTiempo(n.creadoEn), style: const TextStyle(fontSize: 11)),
                       isThreeLine: n.mensaje.length > 40,
@@ -86,6 +89,16 @@ class _BotonNotificacionesState extends State<BotonNotificaciones> {
   void initState() {
     super.initState();
     _actualizar();
+    // Al llegar un push con la app abierta se actualiza el contador.
+    PushService.instancia.recibidos.addListener(_actualizar);
+    refrescoDeDatos.addListener(_actualizar);
+  }
+
+  @override
+  void dispose() {
+    PushService.instancia.recibidos.removeListener(_actualizar);
+    refrescoDeDatos.removeListener(_actualizar);
+    super.dispose();
   }
 
   Future<void> _actualizar() async {

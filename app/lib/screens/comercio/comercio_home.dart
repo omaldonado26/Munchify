@@ -60,14 +60,17 @@ class _ComercioHomeState extends State<ComercioHome> {
           ),
         ],
       ),
-      body: pantallas[_indice],
+      body: PestanasPerezosas(indice: _indice, pestanas: pantallas),
       bottomNavigationBar: NavigationBar(
         selectedIndex: _indice,
         onDestinationSelected: (i) => setState(() => _indice = i),
         destinations: const [
-          NavigationDestination(icon: Icon(Icons.insights_outlined), selectedIcon: Icon(Icons.insights), label: 'Panel'),
-          NavigationDestination(icon: Icon(Icons.campaign_outlined), selectedIcon: Icon(Icons.campaign), label: 'Campañas'),
-          NavigationDestination(icon: Icon(Icons.fact_check_outlined), selectedIcon: Icon(Icons.fact_check), label: 'Validar'),
+          NavigationDestination(
+              icon: Icon(Icons.insights_outlined), selectedIcon: Icon(Icons.insights), label: 'Panel'),
+          NavigationDestination(
+              icon: Icon(Icons.campaign_outlined), selectedIcon: Icon(Icons.campaign), label: 'Campañas'),
+          NavigationDestination(
+              icon: Icon(Icons.fact_check_outlined), selectedIcon: Icon(Icons.fact_check), label: 'Validar'),
           NavigationDestination(icon: Icon(Icons.qr_code_scanner), label: 'Canjear'),
         ],
       ),

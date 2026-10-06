@@ -117,7 +117,8 @@ class _CampanaFormScreenState extends State<CampanaFormScreen> {
     try {
       await ApiService.instancia.guardarCampana(datos, id: widget.campana?.id);
       if (!mounted) return;
-      mostrarMensaje(context, _editando ? 'Campaña actualizada' : 'Campaña publicada. ¡Tus clientes ya fueron notificados!');
+      mostrarMensaje(
+          context, _editando ? 'Campaña actualizada' : 'Campaña publicada. ¡Tus clientes ya fueron notificados!');
       Navigator.pop(context, true);
     } catch (e) {
       if (mounted) mostrarMensaje(context, e.toString(), error: true);
@@ -133,7 +134,8 @@ class _CampanaFormScreenState extends State<CampanaFormScreen> {
     return (n == null || n < 1) ? 'Número mayor a 0' : null;
   }
 
-  Widget _dropdown(String etiqueta, IconData icono, String valor, Map<String, String> opciones, ValueChanged<String> onChanged) {
+  Widget _dropdown(
+      String etiqueta, IconData icono, String valor, Map<String, String> opciones, ValueChanged<String> onChanged) {
     return DropdownButtonFormField<String>(
       value: valor,
       isExpanded: true,
@@ -164,7 +166,8 @@ class _CampanaFormScreenState extends State<CampanaFormScreen> {
             espacio,
             TextFormField(
               controller: _beneficio,
-              decoration: deco('Beneficio ofrecido', icono: Icons.local_offer_outlined, ayuda: 'Lo que recibe el cliente'),
+              decoration:
+                  deco('Beneficio ofrecido', icono: Icons.local_offer_outlined, ayuda: 'Lo que recibe el cliente'),
               validator: _requerido,
             ),
             espacio,
@@ -223,7 +226,8 @@ class _CampanaFormScreenState extends State<CampanaFormScreen> {
             DropdownButtonFormField<int>(
               value: _categorias.any((c) => c.id == _categoriaId) ? _categoriaId : null,
               isExpanded: true,
-              decoration: deco('Categoría', icono: Icons.category_outlined, ayuda: 'Si no eliges, se usa la de tu comercio'),
+              decoration:
+                  deco('Categoría', icono: Icons.category_outlined, ayuda: 'Si no eliges, se usa la de tu comercio'),
               items: _categorias.map((c) => DropdownMenuItem(value: c.id, child: Text(c.nombre))).toList(),
               onChanged: (v) => setState(() => _categoriaId = v),
             ),

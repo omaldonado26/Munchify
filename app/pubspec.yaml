@@ -1,6 +1,6 @@
 name: munchify
-description: "Munchify - Plataforma de cupones y recompensas por interacción digital."
-publish_to: 'none'
+description: "Munchify"
+publish_to: "none"
 version: 1.0.0+1
 
 environment:
@@ -16,6 +16,10 @@ dependencies:
   qr_flutter: ^4.1.0
   mobile_scanner: ^6.0.2
   image_picker: ^1.1.2
+  firebase_core: ^4.15.0
+  firebase_messaging: ^16.7.0
+  firebase_auth: ^6.7.0
+  google_sign_in: ^7.2.0
 
 dev_dependencies:
   flutter_test:

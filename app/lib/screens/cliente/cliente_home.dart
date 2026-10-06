@@ -34,16 +34,14 @@ class _ClienteHomeState extends State<ClienteHome> {
         title: const MunchifyLogo(alto: 22),
         actions: const [BotonNotificaciones()],
       ),
-      body: pantallas[_indice],
+      body: PestanasPerezosas(indice: _indice, pestanas: pantallas),
       bottomNavigationBar: BarraCristal(
         child: NavigationBar(
           selectedIndex: _indice,
           onDestinationSelected: (i) => setState(() => _indice = i),
           destinations: const [
             NavigationDestination(
-                icon: Icon(Icons.explore_outlined),
-                selectedIcon: Icon(Icons.explore),
-                label: 'Explorar'),
+                icon: Icon(Icons.explore_outlined), selectedIcon: Icon(Icons.explore), label: 'Explorar'),
             NavigationDestination(
                 icon: Icon(Icons.confirmation_number_outlined),
                 selectedIcon: Icon(Icons.confirmation_number),
@@ -52,10 +50,7 @@ class _ClienteHomeState extends State<ClienteHome> {
                 icon: Icon(Icons.card_giftcard_outlined),
                 selectedIcon: Icon(Icons.card_giftcard),
                 label: 'Recompensas'),
-            NavigationDestination(
-                icon: Icon(Icons.person_outline),
-                selectedIcon: Icon(Icons.person),
-                label: 'Perfil'),
+            NavigationDestination(icon: Icon(Icons.person_outline), selectedIcon: Icon(Icons.person), label: 'Perfil'),
           ],
         ),
       ),

@@ -1,10 +1,21 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.CAMERA"/>
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
     <application android:usesCleartextTraffic="true"
         android:label="Munchify"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
+        <!-- Notificaciones push: canal, ícono y color por defecto -->
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_channel_id"
+            android:value="munchify_avisos" />
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_icon"
+            android:resource="@drawable/ic_notificacion" />
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_color"
+            android:resource="@color/munchify_rojo" />
         <activity
             android:name=".MainActivity"
             android:exported="true"

@@ -94,7 +94,8 @@ class _CanjearScreenState extends State<CanjearScreen> {
             ),
           ),
         const SizedBox(height: 20),
-        const Text('o ingresa el código manualmente', textAlign: TextAlign.center, style: TextStyle(color: MunchifyColors.gris)),
+        const Text('o ingresa el código manualmente',
+            textAlign: TextAlign.center, style: TextStyle(color: MunchifyColors.gris)),
         const SizedBox(height: 10),
         Row(
           children: [
@@ -103,7 +104,8 @@ class _CanjearScreenState extends State<CanjearScreen> {
                 controller: _codigo,
                 textCapitalization: TextCapitalization.characters,
                 onSubmitted: (_) => _verificar(),
-                decoration: deco('Código del cupón', icono: Icons.confirmation_number_outlined, ayuda: 'Ej. MCH-7K2P-QX9A'),
+                decoration:
+                    deco('Código del cupón', icono: Icons.confirmation_number_outlined, ayuda: 'Ej. MCH-7K2P-QX9A'),
               ),
             ),
             const SizedBox(width: 8),
@@ -122,22 +124,22 @@ class _CanjearScreenState extends State<CanjearScreen> {
         Text('Últimos canjes', style: Theme.of(context).textTheme.titleMedium),
         const SizedBox(height: 8),
         FuturoRecargable<List<Cupon>>(
-            key: ValueKey(_version),
-            cargar: ApiService.instancia.ultimosCanjes,
-            builder: (_, lista, __) => lista.isEmpty
-                ? const VistaVacia(icono: Icons.receipt_long_outlined, mensaje: 'Aún no hay canjes')
-                : Column(
-                    children: [
-                      for (final c in lista.take(8))
-                        ListTile(
-                          dense: true,
-                          leading: const Icon(Icons.check_circle, color: MunchifyColors.exito),
-                          title: Text(c.beneficio),
-                          subtitle: Text('${c.usuarioNombre ?? ''} · ${c.codigo}'),
-                          trailing: Text(haceTiempo(c.fechaCanje), style: const TextStyle(fontSize: 11)),
-                        ),
-                    ],
-                  ),
+          key: ValueKey(_version),
+          cargar: ApiService.instancia.ultimosCanjes,
+          builder: (_, lista, __) => lista.isEmpty
+              ? const VistaVacia(icono: Icons.receipt_long_outlined, mensaje: 'Aún no hay canjes')
+              : Column(
+                  children: [
+                    for (final c in lista.take(8))
+                      ListTile(
+                        dense: true,
+                        leading: const Icon(Icons.check_circle, color: MunchifyColors.exito),
+                        title: Text(c.beneficio),
+                        subtitle: Text('${c.usuarioNombre ?? ''} · ${c.codigo}'),
+                        trailing: Text(haceTiempo(c.fechaCanje), style: const TextStyle(fontSize: 11)),
+                      ),
+                  ],
+                ),
         ),
       ],
     );

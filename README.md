@@ -169,14 +169,17 @@ Reglas de negocio clave:
 - Cada hora el servidor marca cupones vencidos, finaliza campañas vencidas/agotadas y avisa de cupones que vencen en 24 h.
 - Todos los movimientos de puntos quedan registrados (`movimientos_puntos`) para trazabilidad.
 
-## Firebase (opcional)
+## Notificaciones push (Firebase Cloud Messaging)
 
-La propuesta contempla Firebase para autenticación y notificaciones. Para que el prototipo
-funcione sin configuración externa, la autenticación usa **JWT propio** y las notificaciones
-se guardan **in-app**. Para activar push con Firebase Cloud Messaging:
+La autenticación usa **JWT propio**; Firebase se usa solo para las notificaciones push en Android.
+Cada notificación in-app se envía además como push al dispositivo del usuario.
 
-1. `cd backend && npm i firebase-admin`
-2. Descarga el JSON de la cuenta de servicio y pon su ruta en `FIREBASE_SERVICE_ACCOUNT` del `.env`.
-3. En la app agrega `firebase_core` y `firebase_messaging` (`flutterfire configure`) y envía el token a `PUT /api/auth/fcm-token`.
-
-El servidor ya envía el push automáticamente junto a cada notificación in-app cuando detecta las credenciales.
+- **App**: `app/android/app/google-services.json` (incluido en el repositorio) y `lib/services/push_service.dart`.
+  Al iniciar sesión la app pide permiso, obtiene el token del dispositivo y lo envía a `PUT /api/auth/fcm-token`;
+  al cerrar sesión lo desvincula.
+- **Servidor**: necesita la clave privada de la cuenta de servicio, que **no** se sube al repositorio.
+  En cada PC: Firebase Console → Configuración del proyecto → Cuentas de servicio → *Generar nueva clave privada*,
+  guárdala como `backend/firebase-cuenta.json` y pon `FIREBASE_SERVICE_ACCOUNT=firebase-cuenta.json` en `.env`.
+  Al arrancar debe aparecer `✔ Firebase Cloud Messaging habilitado`. Sin la clave, el servidor funciona igual
+  pero solo con notificaciones in-app.
+- Se usa `firebase-admin` 12 por compatibilidad con Node 16; con Node 18+ se puede actualizar.

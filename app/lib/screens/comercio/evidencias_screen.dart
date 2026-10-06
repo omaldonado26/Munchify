@@ -22,7 +22,12 @@ class _EvidenciasScreenState extends State<EvidenciasScreen> {
   int _version = 0;
   final Set<int> _procesando = {};
 
-  static const _filtros = {'pendiente': 'Por revisar', 'aprobada': 'Aprobadas', 'rechazada': 'Rechazadas', null: 'Todas'};
+  static const _filtros = {
+    'pendiente': 'Por revisar',
+    'aprobada': 'Aprobadas',
+    'rechazada': 'Rechazadas',
+    null: 'Todas'
+  };
 
   Future<void> _aprobar(Evidencia e) async {
     setState(() => _procesando.add(e.id));
@@ -77,7 +82,7 @@ class _EvidenciasScreenState extends State<EvidenciasScreen> {
         insetPadding: const EdgeInsets.all(12),
         child: Stack(
           children: [
-            InteractiveViewer(child: Image.network(url, fit: BoxFit.contain)),
+            InteractiveViewer(child: Image.network(url, fit: BoxFit.contain, headers: ApiService.cabecerasTunel)),
             Positioned(
               right: 4,
               top: 4,
@@ -139,9 +144,7 @@ class _EvidenciasScreenState extends State<EvidenciasScreen> {
     final ocupado = _procesando.contains(e.id);
     return Card(
       elevation: 0,
-      color: MunchifyColors.superficie,
       margin: const EdgeInsets.symmetric(vertical: 6),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: Padding(
         padding: const EdgeInsets.all(14),
         child: Column(
@@ -181,6 +184,7 @@ class _EvidenciasScreenState extends State<EvidenciasScreen> {
                   borderRadius: BorderRadius.circular(12),
                   child: Image.network(
                     url,
+                    headers: ApiService.cabecerasTunel,
                     height: 200,
                     width: double.infinity,
                     fit: BoxFit.cover,
@@ -203,11 +207,11 @@ class _EvidenciasScreenState extends State<EvidenciasScreen> {
                 },
                 child: Row(
                   children: [
-                    const Icon(Icons.link, size: 18, color: MunchifyColors.secundario),
+                    const Icon(Icons.link, size: 18, color: MunchifyColors.primario),
                     const SizedBox(width: 6),
                     Expanded(
                       child: Text(e.enlace!,
-                          style: const TextStyle(color: MunchifyColors.secundario, decoration: TextDecoration.underline)),
+                          style: const TextStyle(color: MunchifyColors.primario, decoration: TextDecoration.underline)),
                     ),
                     const Icon(Icons.copy, size: 16, color: MunchifyColors.gris),
                   ],

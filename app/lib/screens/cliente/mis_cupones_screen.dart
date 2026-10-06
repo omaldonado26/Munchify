@@ -83,9 +83,7 @@ class _TarjetaCupon extends StatelessWidget {
     final color = colorEstado(cupon.estado);
     return Card(
       elevation: 0,
-      color: MunchifyColors.superficie,
       margin: const EdgeInsets.symmetric(vertical: 6),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       clipBehavior: Clip.antiAlias,
       child: InkWell(
         onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => CuponQrScreen(cupon: cupon))),
@@ -96,7 +94,8 @@ class _TarjetaCupon extends StatelessWidget {
               Container(
                 width: 70,
                 color: color.withAlpha(30),
-                child: Icon(cupon.origen == 'recompensa' ? Icons.card_giftcard : Icons.qr_code_2, color: color, size: 34),
+                child:
+                    Icon(cupon.origen == 'recompensa' ? Icons.card_giftcard : Icons.qr_code_2, color: color, size: 34),
               ),
               Expanded(
                 child: Padding(
@@ -104,7 +103,8 @@ class _TarjetaCupon extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(cupon.comercioNombre ?? '', style: const TextStyle(color: MunchifyColors.gris, fontSize: 12)),
+                      Text(cupon.comercioNombre ?? '',
+                          style: const TextStyle(color: MunchifyColors.gris, fontSize: 12)),
                       Text(cupon.beneficio, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
                       const SizedBox(height: 4),
                       Text(cupon.codigo, style: const TextStyle(letterSpacing: 1.2, fontSize: 12)),

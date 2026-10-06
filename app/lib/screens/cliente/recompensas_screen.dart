@@ -60,26 +60,29 @@ class _RecompensasScreenState extends State<RecompensasScreen> {
     final puntos = context.watch<AuthProvider>().usuario?.puntos ?? 0;
     return Column(
       children: [
-        Container(
-          margin: const EdgeInsets.all(16),
-          padding: const EdgeInsets.all(18),
-          decoration: BoxDecoration(
-            gradient: const LinearGradient(colors: [MunchifyColors.primario, MunchifyColors.primarioOscuro]),
-            borderRadius: BorderRadius.circular(20),
-          ),
-          child: Row(
-            children: [
-              const Icon(Icons.stars_rounded, color: Colors.white, size: 44),
-              const SizedBox(width: 14),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+        Padding(
+          padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
+          child: SuperficieCristal(
+            padding: const EdgeInsets.all(18),
+            child: Semantics(
+              label: 'Tus puntos Munchify: $puntos',
+              excludeSemantics: true,
+              child: Row(
                 children: [
-                  const Text('Tus puntos Munchify', style: TextStyle(color: Colors.white70)),
-                  Text('$puntos pts',
-                      style: const TextStyle(color: MunchifyColors.superficie, fontSize: 28, fontWeight: FontWeight.bold)),
+                  const Icon(Icons.star_rounded, color: MunchifyColors.primario, size: 28),
+                  const SizedBox(width: 12),
+                  const Expanded(
+                    child: Text('Tus puntos',
+                        style: TextStyle(color: MunchifyColors.gris, fontSize: 15, fontWeight: FontWeight.w600)),
+                  ),
+                  Text('$puntos',
+                      style: const TextStyle(color: MunchifyColors.claro, fontSize: 28, fontWeight: FontWeight.w800)),
+                  const SizedBox(width: 4),
+                  const Text('pts',
+                      style: TextStyle(color: MunchifyColors.gris, fontSize: 15, fontWeight: FontWeight.w600)),
                 ],
               ),
-            ],
+            ),
           ),
         ),
         Expanded(
@@ -104,14 +107,12 @@ class _RecompensasScreenState extends State<RecompensasScreen> {
                         final alcanza = puntos >= r.costoPuntos;
                         return Card(
                           elevation: 0,
-                          color: MunchifyColors.superficie,
                           margin: const EdgeInsets.symmetric(vertical: 6),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                           child: ListTile(
                             contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
-                            leading: CircleAvatar(
-                              backgroundColor: MunchifyColors.secundario.withAlpha(30),
-                              child: const Icon(Icons.card_giftcard, color: MunchifyColors.secundario),
+                            leading: const CircleAvatar(
+                              backgroundColor: Color(0x0FFFFFFF),
+                              child: Icon(Icons.card_giftcard_outlined, color: MunchifyColors.claro),
                             ),
                             title: Text(r.nombre, style: const TextStyle(fontWeight: FontWeight.bold)),
                             subtitle: Text(
@@ -119,7 +120,8 @@ class _RecompensasScreenState extends State<RecompensasScreen> {
                               '${r.costoPuntos} pts · quedan ${r.stock}',
                             ),
                             isThreeLine: true,
-                            trailing: FilledButton(
+                            // Botón de contorno: en una lista, un botón rojo relleno por fila compite consigo mismo.
+                            trailing: OutlinedButton(
                               onPressed: alcanza ? () => _canjear(r) : null,
                               child: Text(alcanza ? 'Canjear' : 'Faltan ${r.costoPuntos - puntos}'),
                             ),

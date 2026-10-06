@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import '../models/models.dart';
 import '../theme.dart';
 import '../utils/formatos.dart';
+import '../utils/refresco.dart';
 
 /// Decoración estándar de los campos de formulario.
 InputDecoration deco(String etiqueta, {IconData? icono, String? ayuda, String? sufijo}) => InputDecoration(
@@ -101,7 +102,8 @@ class VistaError extends StatelessWidget {
             const SizedBox(height: 12),
             Text(mensaje, textAlign: TextAlign.center),
             const SizedBox(height: 16),
-            OutlinedButton.icon(onPressed: onReintentar, icon: const Icon(Icons.refresh), label: const Text('Reintentar')),
+            OutlinedButton.icon(
+                onPressed: onReintentar, icon: const Icon(Icons.refresh), label: const Text('Reintentar')),
           ],
         ),
       ),
@@ -109,7 +111,57 @@ class VistaError extends StatelessWidget {
   }
 }
 
+/// Indica a los widgets de una pestaña si esa pestaña es la visible.
+/// Fuera de las pestañas (pantallas abiertas encima) se considera siempre visible.
+class PestanaVisible extends InheritedWidget {
+  final bool visible;
+  const PestanaVisible({super.key, required this.visible, required super.child});
+
+  static bool of(BuildContext context) =>
+      context.dependOnInheritedWidgetOfExactType<PestanaVisible>()?.visible ?? true;
+
+  @override
+  bool updateShouldNotify(PestanaVisible old) => old.visible != visible;
+}
+
+/// Contenido de una barra de pestañas que conserva el estado de cada pestaña.
+/// Cada pestaña se construye la primera vez que se visita y después se mantiene viva,
+/// así cambiar de pestaña es instantáneo (tab-bars.md: preservar el estado de cada sección).
+class PestanasPerezosas extends StatefulWidget {
+  final int indice;
+  final List<Widget> pestanas;
+  const PestanasPerezosas({super.key, required this.indice, required this.pestanas});
+
+  @override
+  State<PestanasPerezosas> createState() => _PestanasPerezosasState();
+}
+
+class _PestanasPerezosasState extends State<PestanasPerezosas> {
+  final Set<int> _visitadas = {};
+
+  @override
+  Widget build(BuildContext context) {
+    _visitadas.add(widget.indice);
+    return IndexedStack(
+      index: widget.indice,
+      children: [
+        for (var i = 0; i < widget.pestanas.length; i++)
+          // Las pestañas ocultas no animan ni reciben foco, y avisan a su contenido que no están visibles.
+          TickerMode(
+            enabled: i == widget.indice,
+            child: PestanaVisible(
+              visible: i == widget.indice,
+              child: _visitadas.contains(i) ? widget.pestanas[i] : const SizedBox.shrink(),
+            ),
+          ),
+      ],
+    );
+  }
+}
+
 /// Carga un Future, muestra spinner/error y permite recargar (pull-to-refresh).
+/// Dentro de [PestanasPerezosas], al volver a la pestaña se actualiza en silencio:
+/// se siguen mostrando los datos anteriores mientras llegan los nuevos.
 class FuturoRecargable<T> extends StatefulWidget {
   final Future<T> Function() cargar;
   final Widget Function(BuildContext context, T datos, Future<void> Function() recargar) builder;
@@ -122,11 +174,37 @@ class FuturoRecargable<T> extends StatefulWidget {
 
 class _FuturoRecargableState<T> extends State<FuturoRecargable<T>> {
   late Future<T> _futuro;
+  bool? _visible;
+  T? _ultimo; // últimos datos buenos: se siguen mostrando si una actualización en silencio falla
 
   @override
   void initState() {
     super.initState();
     _futuro = widget.cargar();
+    refrescoDeDatos.addListener(_alPedirRefresco);
+  }
+
+  @override
+  void dispose() {
+    refrescoDeDatos.removeListener(_alPedirRefresco);
+    super.dispose();
+  }
+
+  // Llegó un push o la app volvió al primer plano: se actualiza sin mostrar el indicador de carga.
+  void _alPedirRefresco() {
+    if (!mounted) return;
+    // Las pestañas ocultas no piden nada ahora: ya se actualizan solas al volver a mostrarse.
+    if (_visible == false) return;
+    setState(() => _futuro = widget.cargar());
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final visible = PestanaVisible.of(context);
+    // Al volver a esta pestaña se piden datos nuevos; FutureBuilder conserva los anteriores mientras tanto.
+    if (_visible == false && visible) _futuro = widget.cargar();
+    _visible = visible;
   }
 
   Future<void> _recargar() async {
@@ -143,69 +221,55 @@ class _FuturoRecargableState<T> extends State<FuturoRecargable<T>> {
       future: _futuro,
       builder: (context, snap) {
         final esperando = snap.connectionState != ConnectionState.done;
+        if (snap.hasData) _ultimo = snap.data as T;
+        final datos = snap.hasData ? snap.data as T : _ultimo;
+        if (datos != null) return widget.builder(context, datos, _recargar);
         if (snap.hasError && !esperando) {
           return VistaError(mensaje: snap.error.toString(), onReintentar: _recargar);
         }
-        if (snap.hasData) return widget.builder(context, snap.data as T, _recargar);
         return const Center(child: CircularProgressIndicator());
       },
     );
   }
 }
 
-/// Tarjeta de indicador para los paneles.
+/// Tarjeta de indicador para los paneles. El ícono es neutro: el color se reserva para
+/// [color], que solo debe usarse cuando el dato es un aviso (p. ej. cupones vencidos).
 class TarjetaDato extends StatelessWidget {
   final String titulo;
   final String valor;
   final IconData icono;
-  final Color color;
-  const TarjetaDato({super.key, required this.titulo, required this.valor, required this.icono, required this.color});
-
-  /// Alto fijo de la tarjeta en las cuadrículas, para que no se desborde según el ancho de pantalla.
-  static const double alto = 116;
+  final Color? color;
+  const TarjetaDato({super.key, required this.titulo, required this.valor, required this.icono, this.color});
 
   @override
   Widget build(BuildContext context) {
-    // Se limita el escalado de texto del sistema para que el contenido siempre quepa en [alto].
-    return MediaQuery.withClampedTextScaling(
-      maxScaleFactor: 1.15,
+    return Semantics(
+      label: '$titulo: $valor',
+      excludeSemantics: true,
       child: Card(
-        elevation: 0,
         margin: EdgeInsets.zero,
-        color: MunchifyColors.superficie,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-          side: const BorderSide(color: MunchifyColors.borde),
-        ),
         child: Padding(
           padding: const EdgeInsets.all(14),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(
-                children: [
-                  Expanded(
-                    child: FittedBox(
-                      fit: BoxFit.scaleDown,
-                      alignment: Alignment.centerLeft,
-                      child: Text(valor, style: const TextStyle(fontSize: 26, fontWeight: FontWeight.w800, height: 1.1)),
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  Container(
-                    width: 36,
-                    height: 36,
-                    decoration: BoxDecoration(color: color.withAlpha(30), borderRadius: BorderRadius.circular(11)),
-                    child: Icon(icono, color: color, size: 20),
-                  ),
-                ],
+              Icon(icono, color: color ?? MunchifyColors.gris, size: 20),
+              const SizedBox(height: 10),
+              Text(
+                valor,
+                style: TextStyle(
+                  fontSize: 26,
+                  fontWeight: FontWeight.w800,
+                  height: 1.1,
+                  color: color ?? MunchifyColors.claro,
+                ),
               ),
-              const Spacer(),
+              const SizedBox(height: 4),
               Text(
                 titulo,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-                style: const TextStyle(color: MunchifyColors.gris, fontSize: 12, fontWeight: FontWeight.w600, height: 1.3),
+                style:
+                    const TextStyle(color: MunchifyColors.gris, fontSize: 13, fontWeight: FontWeight.w600, height: 1.3),
               ),
             ],
           ),
@@ -215,7 +279,34 @@ class TarjetaDato extends StatelessWidget {
   }
 }
 
-/// Superficie oscura tipo cristal: fondo translúcido, borde fino y esquinas suaves.
+/// Cuadrícula de dos columnas cuyas filas crecen con el contenido (respeta el tamaño de texto del sistema).
+class CuadriculaDatos extends StatelessWidget {
+  final List<Widget> children;
+  final double espacio;
+  const CuadriculaDatos({super.key, required this.children, this.espacio = 8});
+
+  @override
+  Widget build(BuildContext context) {
+    final filas = <Widget>[];
+    for (var i = 0; i < children.length; i += 2) {
+      if (i > 0) filas.add(SizedBox(height: espacio));
+      filas.add(IntrinsicHeight(
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Expanded(child: children[i]),
+            SizedBox(width: espacio),
+            Expanded(child: i + 1 < children.length ? children[i + 1] : const SizedBox.shrink()),
+          ],
+        ),
+      ));
+    }
+    return Column(mainAxisSize: MainAxisSize.min, children: filas);
+  }
+}
+
+/// Superficie de contenido: fondo oscuro, borde fino y esquinas suaves.
+/// Con "Aumentar contraste" del sistema el borde se refuerza para que la tarjeta siga delimitada.
 class SuperficieCristal extends StatelessWidget {
   final Widget child;
   final EdgeInsetsGeometry? padding;
@@ -225,11 +316,12 @@ class SuperficieCristal extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final altoContraste = MediaQuery.highContrastOf(context);
     return DecoratedBox(
       decoration: BoxDecoration(
         color: const Color(0xCC18181B),
         borderRadius: BorderRadius.circular(radio),
-        border: Border.all(color: MunchifyColors.bordeSuave),
+        border: Border.all(color: altoContraste ? const Color(0xFF71717A) : MunchifyColors.bordeSuave),
       ),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(radio),
@@ -247,27 +339,30 @@ class SuperficieCristal extends StatelessWidget {
   }
 }
 
-/// Barra de navegación inferior flotante con efecto de cristal (desenfoque del contenido).
+/// Barra de navegación inferior de cristal: es la única superficie con desenfoque (capa funcional).
+/// Con "Aumentar contraste" pasa a ser opaca.
 class BarraCristal extends StatelessWidget {
   final NavigationBar child;
   const BarraCristal({super.key, required this.child});
 
   @override
   Widget build(BuildContext context) {
-    return ClipRect(
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
-        child: DecoratedBox(
-          decoration: const BoxDecoration(
-            color: Color(0xB309090B),
-            border: Border(top: BorderSide(color: MunchifyColors.bordeSuave)),
-          ),
-          child: NavigationBarTheme(
-            data: NavigationBarTheme.of(context).copyWith(backgroundColor: Colors.transparent, elevation: 0),
-            child: child,
-          ),
+    final altoContraste = MediaQuery.highContrastOf(context);
+    final barra = DecoratedBox(
+      decoration: BoxDecoration(
+        color: altoContraste ? MunchifyColors.oscuro : const Color(0xB309090B),
+        border: Border(
+          top: BorderSide(color: altoContraste ? const Color(0xFF71717A) : MunchifyColors.bordeSuave),
         ),
       ),
+      child: NavigationBarTheme(
+        data: NavigationBarTheme.of(context).copyWith(backgroundColor: Colors.transparent, elevation: 0),
+        child: child,
+      ),
+    );
+    if (altoContraste) return barra;
+    return ClipRect(
+      child: BackdropFilter(filter: ImageFilter.blur(sigmaX: 24, sigmaY: 24), child: barra),
     );
   }
 }
@@ -275,7 +370,8 @@ class BarraCristal extends StatelessWidget {
 /// Espacio que deben dejar al final las listas que pasan por debajo de [BarraCristal].
 const double espacioBarraCristal = 96;
 
-/// Resumen en cuadrícula tipo "bento": puntos del cliente y datos rápidos de las promociones.
+/// Resumen discreto en la cabecera de Explorar: puntos del cliente y estado de las promociones.
+/// Se adapta al tamaño de texto del sistema (sin altura fija).
 class BentoResumen extends StatelessWidget {
   final int puntos;
   final int promociones;
@@ -284,96 +380,22 @@ class BentoResumen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MediaQuery.withClampedTextScaling(
-      maxScaleFactor: 1.15,
-      child: SizedBox(
-        height: 148,
+    return SuperficieCristal(
+      radio: 18,
+      padding: const EdgeInsets.symmetric(vertical: 14),
+      child: IntrinsicHeight(
         child: Row(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // Celda grande: puntos, con un resplandor rojo como único acento
+            Expanded(child: _Dato(valor: '$puntos', etiqueta: 'puntos', destacado: true)),
+            const VerticalDivider(width: 1, thickness: 1, color: MunchifyColors.borde),
+            Expanded(child: _Dato(valor: '$promociones', etiqueta: promociones == 1 ? 'promoción' : 'promociones')),
+            const VerticalDivider(width: 1, thickness: 1, color: MunchifyColors.borde),
             Expanded(
-              flex: 5,
-              child: SuperficieCristal(
-                child: Stack(
-                  children: [
-                    const Positioned(
-                      right: -40,
-                      bottom: -50,
-                      width: 160,
-                      height: 160,
-                      child: DecoratedBox(
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          gradient: RadialGradient(colors: [Color(0x59FF3B3F), Color(0x00FF3B3F)]),
-                        ),
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(16),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Row(
-                            children: [
-                              Icon(Icons.auto_awesome_outlined, size: 16, color: MunchifyColors.primario),
-                              SizedBox(width: 6),
-                              Text(
-                                'Tus puntos',
-                                style: TextStyle(color: MunchifyColors.gris, fontSize: 12, fontWeight: FontWeight.w600),
-                              ),
-                            ],
-                          ),
-                          const Spacer(),
-                          FittedBox(
-                            fit: BoxFit.scaleDown,
-                            alignment: Alignment.centerLeft,
-                            child: Text(
-                              '$puntos',
-                              style: const TextStyle(
-                                fontSize: 44,
-                                height: 1,
-                                fontWeight: FontWeight.w800,
-                                letterSpacing: -1.5,
-                                color: Colors.white,
-                              ),
-                            ),
-                          ),
-                          const SizedBox(height: 4),
-                          const Text(
-                            'pts para canjear',
-                            style: TextStyle(color: MunchifyColors.gris, fontSize: 12, fontWeight: FontWeight.w500),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            const SizedBox(width: 10),
-            Expanded(
-              flex: 4,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Expanded(
-                    child: _CeldaBento(
-                      icono: Icons.local_offer_outlined,
-                      valor: '$promociones',
-                      etiqueta: promociones == 1 ? 'promoción' : 'promociones',
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  Expanded(
-                    child: _CeldaBento(
-                      icono: Icons.schedule_outlined,
-                      valor: '$porVencer',
-                      etiqueta: 'por vencer',
-                      color: porVencer > 0 ? MunchifyColors.alerta : null,
-                    ),
-                  ),
-                ],
+              child: _Dato(
+                valor: '$porVencer',
+                etiqueta: 'por vencer',
+                icono: porVencer > 0 ? Icons.schedule_outlined : null,
+                color: porVencer > 0 ? MunchifyColors.alerta : null,
               ),
             ),
           ],
@@ -383,38 +405,61 @@ class BentoResumen extends StatelessWidget {
   }
 }
 
-class _CeldaBento extends StatelessWidget {
-  final IconData icono;
+class _Dato extends StatelessWidget {
   final String valor;
   final String etiqueta;
+  final bool destacado;
+  final IconData? icono;
   final Color? color;
-  const _CeldaBento({required this.icono, required this.valor, required this.etiqueta, this.color});
+  const _Dato({required this.valor, required this.etiqueta, this.destacado = false, this.icono, this.color});
 
   @override
   Widget build(BuildContext context) {
-    return SuperficieCristal(
-      padding: const EdgeInsets.symmetric(horizontal: 14),
-      child: Row(
-        children: [
-          Icon(icono, size: 20, color: color ?? MunchifyColors.primario),
-          const SizedBox(width: 10),
-          Text(valor, style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w800, color: Colors.white)),
-          const SizedBox(width: 6),
-          Expanded(
-            child: Text(
-              etiqueta,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-              style: const TextStyle(color: MunchifyColors.gris, fontSize: 11, fontWeight: FontWeight.w600, height: 1.2),
+    return Semantics(
+      label: '$valor $etiqueta',
+      excludeSemantics: true,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 8),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (icono != null) ...[
+                  Icon(icono, size: 16, color: color),
+                  const SizedBox(width: 4),
+                ],
+                Flexible(
+                  child: Text(
+                    valor,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      fontSize: 22,
+                      height: 1.1,
+                      fontWeight: FontWeight.w800,
+                      color: color ?? (destacado ? MunchifyColors.primario : MunchifyColors.claro),
+                    ),
+                  ),
+                ),
+              ],
             ),
-          ),
-        ],
+            const SizedBox(height: 2),
+            Text(
+              etiqueta,
+              textAlign: TextAlign.center,
+              style: const TextStyle(color: MunchifyColors.gris, fontSize: 12, fontWeight: FontWeight.w600),
+            ),
+          ],
+        ),
       ),
     );
   }
 }
 
-/// Tarjeta de promoción del listado del cliente: cupón oscuro tipo cristal con el rojo como acento.
+/// Tarjeta de promoción del listado del cliente. Es el elemento distintivo de la app: un cupón
+/// con línea de corte. El rojo se reserva para el beneficio, que es lo que el cliente gana.
 class TarjetaCampana extends StatelessWidget {
   final Campana campana;
   final VoidCallback onTap;
@@ -425,199 +470,155 @@ class TarjetaCampana extends StatelessWidget {
     final c = campana;
     final restante = tiempoRestante(c.fin);
     final urgente = restante == 'Vence hoy' || restante == 'Vence mañana';
-    final proporcion =
-        c.cantidadDisponible > 0 ? (c.cuponesRestantes / c.cantidadDisponible).clamp(0.0, 1.0) : 0.0;
+    final proporcion = c.cantidadDisponible > 0 ? (c.cuponesRestantes / c.cantidadDisponible).clamp(0.0, 1.0) : 0.0;
     final agotandose = c.cantidadDisponible > 0 && proporcion <= 0.2;
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-      child: SuperficieCristal(
-        onTap: onTap,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            // Encabezado: comercio y título
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 16, 16, 12),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Container(
-                    width: 44,
-                    height: 44,
-                    decoration: BoxDecoration(
-                      color: const Color(0x0DFFFFFF),
-                      borderRadius: BorderRadius.circular(14),
-                      border: Border.all(color: MunchifyColors.bordeSuave),
-                    ),
-                    child: Icon(iconoCategoria(c.categoriaNombre), color: MunchifyColors.primario, size: 22),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          (c.comercioNombre ?? '').toUpperCase(),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(
-                            color: MunchifyColors.gris,
-                            fontSize: 11,
-                            fontWeight: FontWeight.w700,
-                            letterSpacing: 0.8,
-                          ),
-                        ),
-                        const SizedBox(height: 3),
-                        Text(
-                          c.titulo,
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.w800,
-                            fontSize: 16,
-                            height: 1.25,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  if (c.miParticipacion != null) ...[
-                    const SizedBox(width: 8),
-                    EstadoChip(c.miParticipacion!),
-                  ],
-                ],
-              ),
-            ),
-
-            // Beneficio: panel con un tinte rojo sutil
-            Container(
-              margin: const EdgeInsets.symmetric(horizontal: 16),
-              padding: const EdgeInsets.fromLTRB(14, 12, 10, 12),
-              decoration: BoxDecoration(
-                color: const Color(0x14FF3B3F),
-                borderRadius: BorderRadius.circular(14),
-                border: Border.all(color: const Color(0x40FF3B3F)),
-              ),
-              child: Row(
-                children: [
-                  const Icon(Icons.local_offer_outlined, size: 20, color: MunchifyColors.primario),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: Text(
-                      c.beneficio,
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.w700,
-                        fontSize: 15,
-                        height: 1.25,
+      child: Semantics(
+        button: true,
+        hint: 'Abrir promoción',
+        child: SuperficieCristal(
+          onTap: onTap,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              // Encabezado: comercio, título y flecha de navegación (convención de fila de lista)
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 16, 12, 12),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      width: 44,
+                      height: 44,
+                      decoration: BoxDecoration(
+                        color: const Color(0x0DFFFFFF),
+                        borderRadius: BorderRadius.circular(14),
+                        border: Border.all(color: MunchifyColors.bordeSuave),
                       ),
+                      child: Icon(iconoCategoria(c.categoriaNombre), color: MunchifyColors.claro, size: 22),
                     ),
-                  ),
-                  const SizedBox(width: 8),
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 5),
-                    decoration: BoxDecoration(
-                      color: const Color(0x0FFFFFFF),
-                      borderRadius: BorderRadius.circular(20),
-                      border: Border.all(color: MunchifyColors.bordeSuave),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        const Icon(Icons.star_outline_rounded, size: 15, color: MunchifyColors.primario),
-                        const SizedBox(width: 3),
-                        Text(
-                          '+${c.puntosOtorgados} pts',
-                          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w700, fontSize: 12),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-
-            const SizedBox(height: 14),
-            const _Perforacion(color: MunchifyColors.bordeSuave),
-
-            // Pie: red social, vigencia, disponibilidad y botón de acción
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Row(
-                          children: [
-                            _Pastilla(
-                              icono: iconoRed(c.redSocial),
-                              texto: redesSociales[c.redSocial] ?? c.redSocial,
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            (c.comercioNombre ?? '').toUpperCase(),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(
+                              color: MunchifyColors.gris,
+                              fontSize: 12,
+                              fontWeight: FontWeight.w700,
+                              letterSpacing: 0.6,
                             ),
-                            const SizedBox(width: 8),
-                            Flexible(
-                              child: _Pastilla(
-                                icono: Icons.schedule_outlined,
-                                texto: restante,
-                                color: urgente ? MunchifyColors.alerta : null,
-                              ),
+                          ),
+                          const SizedBox(height: 3),
+                          Text(
+                            c.titulo,
+                            style: const TextStyle(
+                              color: MunchifyColors.claro,
+                              fontWeight: FontWeight.w800,
+                              fontSize: 17,
+                              height: 1.25,
                             ),
+                          ),
+                          if (c.miParticipacion != null) ...[
+                            const SizedBox(height: 8),
+                            EstadoChip(c.miParticipacion!),
                           ],
+                        ],
+                      ),
+                    ),
+                    const SizedBox(width: 4),
+                    const Padding(
+                      padding: EdgeInsets.only(top: 12),
+                      child: Icon(Icons.chevron_right_rounded, size: 24, color: MunchifyColors.gris),
+                    ),
+                  ],
+                ),
+              ),
+
+              // Beneficio: la cara del cupón, único bloque con color de marca
+              Container(
+                margin: const EdgeInsets.symmetric(horizontal: 16),
+                padding: const EdgeInsets.fromLTRB(14, 12, 12, 12),
+                decoration: BoxDecoration(
+                  color: const Color(0x14FF3B3F),
+                  borderRadius: BorderRadius.circular(14),
+                  border: Border.all(color: const Color(0x40FF3B3F)),
+                ),
+                child: Row(
+                  children: [
+                    const Icon(Icons.local_offer_outlined, size: 20, color: MunchifyColors.primario),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Text(
+                        c.beneficio,
+                        style: const TextStyle(
+                          color: MunchifyColors.claro,
+                          fontWeight: FontWeight.w700,
+                          fontSize: 16,
+                          height: 1.3,
                         ),
                       ),
-                      const SizedBox(width: 8),
-                      const _BotonIr(),
-                    ],
-                  ),
-                  if (c.cantidadDisponible > 0) ...[
-                    const SizedBox(height: 14),
-                    Row(
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      '+${c.puntosOtorgados} pts',
+                      style: const TextStyle(color: MunchifyColors.gris, fontWeight: FontWeight.w700, fontSize: 13),
+                    ),
+                  ],
+                ),
+              ),
+
+              const SizedBox(height: 14),
+              const _Perforacion(color: MunchifyColors.bordeSuave),
+
+              // Pie: dónde se participa, vigencia y cupones restantes
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 8,
                       children: [
-                        Expanded(child: _BarraDisponibles(valor: proporcion, alerta: agotandose)),
-                        const SizedBox(width: 10),
-                        Text(
-                          agotandose ? '¡Quedan ${c.cuponesRestantes}!' : '${c.cuponesRestantes} disponibles',
-                          style: TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w600,
-                            color: agotandose ? MunchifyColors.alerta : MunchifyColors.gris,
-                          ),
+                        _Pastilla(icono: iconoRed(c.redSocial), texto: redesSociales[c.redSocial] ?? c.redSocial),
+                        _Pastilla(
+                          icono: Icons.schedule_outlined,
+                          texto: restante,
+                          color: urgente ? MunchifyColors.alerta : null,
                         ),
                       ],
                     ),
+                    if (c.cantidadDisponible > 0) ...[
+                      const SizedBox(height: 14),
+                      Row(
+                        children: [
+                          Expanded(child: _BarraDisponibles(valor: proporcion, alerta: agotandose)),
+                          const SizedBox(width: 10),
+                          Text(
+                            agotandose ? '¡Quedan ${c.cuponesRestantes}!' : '${c.cuponesRestantes} disponibles',
+                            style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                              color: agotandose ? MunchifyColors.alerta : MunchifyColors.gris,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
                   ],
-                ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
-    );
-  }
-}
-
-/// Botón de acción principal de la tarjeta: rojo con degradado sutil y resplandor.
-class _BotonIr extends StatelessWidget {
-  const _BotonIr();
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: 34,
-      height: 34,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(12),
-        gradient: const LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [MunchifyColors.primario, MunchifyColors.primarioOscuro],
-        ),
-        boxShadow: const [BoxShadow(color: Color(0x4DDC2626), blurRadius: 14, offset: Offset(0, 4))],
-      ),
-      child: const Icon(Icons.arrow_forward_rounded, size: 18, color: Colors.white),
     );
   }
 }
@@ -630,7 +631,7 @@ class _BarraDisponibles extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = alerta ? MunchifyColors.alerta : MunchifyColors.primario;
+    final color = alerta ? MunchifyColors.alerta : const Color(0xB3FAFAFA); // neutra: el rojo queda para el beneficio
     return Container(
       height: 4,
       decoration: BoxDecoration(color: const Color(0x14FFFFFF), borderRadius: BorderRadius.circular(2)),
@@ -641,7 +642,7 @@ class _BarraDisponibles extends StatelessWidget {
           decoration: BoxDecoration(
             color: color,
             borderRadius: BorderRadius.circular(2),
-            boxShadow: [BoxShadow(color: color.withAlpha(90), blurRadius: 6)],
+            boxShadow: alerta ? [BoxShadow(color: color.withAlpha(90), blurRadius: 6)] : null,
           ),
           child: const SizedBox.expand(),
         ),

@@ -34,7 +34,7 @@ class PerfilScreen extends StatelessWidget {
                   backgroundColor: MunchifyColors.primario,
                   child: Text(
                     u.nombre.isNotEmpty ? u.nombre[0].toUpperCase() : '?',
-                    style: const TextStyle(fontSize: 36, color: MunchifyColors.superficie, fontWeight: FontWeight.bold),
+                    style: const TextStyle(fontSize: 36, color: Colors.white, fontWeight: FontWeight.bold),
                   ),
                 ),
               ),
@@ -42,33 +42,31 @@ class PerfilScreen extends StatelessWidget {
               Text(u.nombre, textAlign: TextAlign.center, style: Theme.of(context).textTheme.titleLarge),
               Text(u.email, textAlign: TextAlign.center, style: const TextStyle(color: MunchifyColors.gris)),
               if (u.usuarioInstagram != null && u.usuarioInstagram!.isNotEmpty)
-                Text(u.usuarioInstagram!, textAlign: TextAlign.center, style: const TextStyle(color: MunchifyColors.gris)),
+                Text(u.usuarioInstagram!,
+                    textAlign: TextAlign.center, style: const TextStyle(color: MunchifyColors.gris)),
               const SizedBox(height: 20),
-              GridView(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  mainAxisExtent: TarjetaDato.alto,
-                  mainAxisSpacing: 8,
-                  crossAxisSpacing: 8,
-                ),
+              CuadriculaDatos(
                 children: [
-                  TarjetaDato(titulo: 'Puntos', valor: '${u.puntos}', icono: Icons.stars_rounded, color: MunchifyColors.secundario),
-                  TarjetaDato(titulo: 'Participaciones', valor: '${v('participaciones')}', icono: Icons.campaign, color: MunchifyColors.primario),
-                  TarjetaDato(titulo: 'Cupones obtenidos', valor: '${v('cupones_obtenidos')}', icono: Icons.confirmation_number, color: MunchifyColors.alerta),
-                  TarjetaDato(titulo: 'Cupones utilizados', valor: '${v('cupones_utilizados')}', icono: Icons.check_circle, color: MunchifyColors.exito),
+                  TarjetaDato(titulo: 'Puntos', valor: '${u.puntos}', icono: Icons.star_outline_rounded),
+                  TarjetaDato(
+                      titulo: 'Participaciones', valor: '${v('participaciones')}', icono: Icons.campaign_outlined),
+                  TarjetaDato(
+                      titulo: 'Cupones obtenidos',
+                      valor: '${v('cupones_obtenidos')}',
+                      icono: Icons.confirmation_number_outlined),
+                  TarjetaDato(
+                      titulo: 'Cupones utilizados',
+                      valor: '${v('cupones_utilizados')}',
+                      icono: Icons.check_circle_outline),
                 ],
               ),
               const SizedBox(height: 16),
               Card(
                 elevation: 0,
-                color: MunchifyColors.superficie,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                 child: Column(
                   children: [
                     ListTile(
-                      leading: const Icon(Icons.history),
+                      leading: const Icon(Icons.history_rounded),
                       title: const Text('Historial de actividad'),
                       subtitle: const Text('Promociones, cupones y puntos'),
                       trailing: const Icon(Icons.chevron_right),
@@ -82,7 +80,8 @@ class PerfilScreen extends StatelessWidget {
                       leading: const Icon(Icons.logout, color: MunchifyColors.error),
                       title: const Text('Cerrar sesión', style: TextStyle(color: MunchifyColors.error)),
                       onTap: () async {
-                        if (await confirmar(context, 'Cerrar sesión', '¿Deseas salir de tu cuenta?', aceptar: 'Salir')) {
+                        if (await confirmar(context, 'Cerrar sesión', '¿Deseas salir de tu cuenta?',
+                            aceptar: 'Salir')) {
                           auth.cerrarSesion();
                         }
                       },

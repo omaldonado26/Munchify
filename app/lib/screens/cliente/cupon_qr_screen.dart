@@ -25,15 +25,18 @@ class CuponQrScreen extends StatelessWidget {
           child: Container(
             constraints: const BoxConstraints(maxWidth: 380),
             padding: const EdgeInsets.all(24),
-            decoration: BoxDecoration(color: MunchifyColors.superficie, borderRadius: BorderRadius.circular(24)),
+            decoration: BoxDecoration(
+              color: MunchifyColors.superficie,
+              borderRadius: BorderRadius.circular(24),
+              border: Border.all(color: MunchifyColors.borde),
+            ),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(cupon.comercioNombre ?? '', style: const TextStyle(color: MunchifyColors.gris)),
                 const SizedBox(height: 4),
                 Text(cupon.beneficio,
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
+                    textAlign: TextAlign.center, style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
                 const SizedBox(height: 4),
                 if (cupon.titulo != cupon.beneficio)
                   Text(cupon.titulo, textAlign: TextAlign.center, style: const TextStyle(color: MunchifyColors.gris)),
@@ -56,8 +59,8 @@ class CuponQrScreen extends StatelessWidget {
                           ),
                           child: Text(
                             etiquetaEstado(cupon.estado).toUpperCase(),
-                            style: TextStyle(
-                                color: colorEstado(cupon.estado), fontSize: 26, fontWeight: FontWeight.w900),
+                            style:
+                                TextStyle(color: colorEstado(cupon.estado), fontSize: 26, fontWeight: FontWeight.w900),
                           ),
                         ),
                       ),

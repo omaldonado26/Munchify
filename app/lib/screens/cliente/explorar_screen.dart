@@ -127,15 +127,15 @@ class _ExplorarScreenState extends State<ExplorarScreen> {
                         }
                         final i = indice - 1;
                         return TarjetaCampana(
-                        campana: lista[i],
-                        onTap: () async {
-                          await Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (_) => CampanaDetalleScreen(campanaId: lista[i].id)),
-                          );
-                          if (mounted) setState(() => _version++);
-                        },
-                      );
+                          campana: lista[i],
+                          onTap: () async {
+                            await Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (_) => CampanaDetalleScreen(campanaId: lista[i].id)),
+                            );
+                            if (mounted) setState(() => _version++);
+                          },
+                        );
                       },
                     ),
             ),

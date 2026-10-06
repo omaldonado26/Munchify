@@ -66,7 +66,8 @@ class HistorialScreen extends StatelessWidget {
                         subtitle: Text('${c.comercioNombre} · ${c.codigo}\nEmitido ${fechaCorta(c.fechaEmision)}'),
                         isThreeLine: true,
                         trailing: EstadoChip(c.estado),
-                        onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => CuponQrScreen(cupon: c))),
+                        onTap: () =>
+                            Navigator.push(context, MaterialPageRoute(builder: (_) => CuponQrScreen(cupon: c))),
                       );
                     },
                   ),

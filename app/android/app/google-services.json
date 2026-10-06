@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "723246546326",
+    "project_id": "munchify-3460a",
+    "storage_bucket": "munchify-3460a.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:723246546326:android:cbb42f18c5c641eb0371b7",
+        "android_client_info": {
+          "package_name": "hn.uth.munchify"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "723246546326-ve32r7cvb2g892vl2hvibkvm82ei16uh.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "hn.uth.munchify",
+            "certificate_hash": "16662f0d85a0e96d70667dde3c290aae6c84cceb"
+          }
+        },
+        {
+          "client_id": "723246546326-98ar7khh3jsfpmfc0hupee8p2jg5cld4.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAhtA_YT-YMyEg8dG0IStdrxUSQLjUD2_Y"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "723246546326-98ar7khh3jsfpmfc0hupee8p2jg5cld4.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

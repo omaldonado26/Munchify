@@ -113,9 +113,7 @@ class _TarjetaCampanaComercio extends StatelessWidget {
     final c = campana;
     return Card(
       elevation: 0,
-      color: MunchifyColors.superficie,
       margin: const EdgeInsets.symmetric(vertical: 6),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: Padding(
         padding: const EdgeInsets.fromLTRB(14, 8, 4, 12),
         child: Column(
@@ -154,7 +152,8 @@ class _TarjetaCampanaComercio extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(c.beneficio, style: const TextStyle(color: MunchifyColors.primario, fontWeight: FontWeight.w600)),
+                  Text(c.beneficio,
+                      style: const TextStyle(color: MunchifyColors.primario, fontWeight: FontWeight.w600)),
                   const SizedBox(height: 4),
                   Text(
                     '${fechaTexto(c.fechaInicio)} – ${fechaTexto(c.fechaFin)}'

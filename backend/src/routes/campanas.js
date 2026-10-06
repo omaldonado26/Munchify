@@ -4,7 +4,7 @@ const { auth, role } = require('../middleware/auth');
 const { upload } = require('../middleware/upload');
 const { HttpError, requerir, entero } = require('../utils');
 const { aprobarEvidencia } = require('../services/cupones');
-const { notificar } = require('../services/notificaciones');
+const { notificar, notificarAClientes } = require('../services/notificaciones');
 
 const CAMPOS_CAMPANA = `
   c.id, c.comercio_id, c.categoria_id, c.titulo, c.descripcion, c.beneficio, c.condiciones,
@@ -98,12 +98,8 @@ router.post('/', role('comercio'), async (req, res) => {
     [...datosCampana(b), req.user.comercio_id]
   );
 
-  // Notificación masiva de nueva promoción a los clientes
-  await query(
-    `INSERT INTO notificaciones (usuario_id, titulo, mensaje, tipo)
-     SELECT id, ?, ?, 'promocion' FROM usuarios WHERE rol='cliente' AND activo=1`,
-    [`Nueva promo en ${co.nombre}`, `${b.titulo}: ${b.beneficio}`]
-  );
+  // Notificación masiva de nueva promoción a los clientes (in-app + push)
+  await notificarAClientes(`Nueva promo en ${co.nombre}`, `${b.titulo}: ${b.beneficio}`);
 
   const [camp] = await query(`SELECT ${CAMPOS_CAMPANA} ${JOINS} WHERE c.id=?`, [r.insertId]);
   res.status(201).json(camp);

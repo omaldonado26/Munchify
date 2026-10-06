@@ -36,46 +36,33 @@ class DashboardScreen extends StatelessWidget {
                     onTap: onIrAValidar,
                   ),
                 ),
-              GridView(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  mainAxisExtent: TarjetaDato.alto,
-                  mainAxisSpacing: 8,
-                  crossAxisSpacing: 8,
-                ),
+              CuadriculaDatos(
                 children: [
                   TarjetaDato(
                       titulo: 'Campañas activas',
                       valor: '${m.valor('campanas_activas')}/${m.valor('campanas_total')}',
-                      icono: Icons.campaign,
-                      color: MunchifyColors.primario),
+                      icono: Icons.campaign_outlined),
                   TarjetaDato(
                       titulo: 'Participantes únicos',
                       valor: '${m.valor('participantes')}',
-                      icono: Icons.people,
-                      color: MunchifyColors.secundario),
+                      icono: Icons.people_outline),
                   TarjetaDato(
                       titulo: 'Cupones emitidos',
                       valor: '${m.valor('cupones_emitidos')}',
-                      icono: Icons.confirmation_number,
-                      color: MunchifyColors.alerta),
+                      icono: Icons.confirmation_number_outlined),
                   TarjetaDato(
                       titulo: 'Cupones canjeados',
                       valor: '${m.valor('cupones_canjeados')}',
-                      icono: Icons.check_circle,
-                      color: MunchifyColors.exito),
+                      icono: Icons.check_circle_outline),
                   TarjetaDato(
                       titulo: 'Tasa de canje',
                       valor: '${m.tasaCanje.toStringAsFixed(m.tasaCanje % 1 == 0 ? 0 : 1)}%',
-                      icono: Icons.percent,
-                      color: Colors.indigo),
+                      icono: Icons.percent_rounded),
                   TarjetaDato(
                       titulo: 'Cupones vencidos',
                       valor: '${m.valor('cupones_vencidos')}',
-                      icono: Icons.event_busy,
-                      color: MunchifyColors.error),
+                      icono: Icons.event_busy_outlined,
+                      color: m.valor('cupones_vencidos') > 0 ? MunchifyColors.error : null),
                 ],
               ),
               const SizedBox(height: 20),
@@ -108,9 +95,7 @@ class _FilaCampana extends StatelessWidget {
     final participantes = Metricas.entero(datos['participantes']);
     return Card(
       elevation: 0,
-      color: MunchifyColors.superficie,
       margin: const EdgeInsets.only(bottom: 8),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
       child: Padding(
         padding: const EdgeInsets.all(14),
         child: Column(
@@ -128,7 +113,8 @@ class _FilaCampana extends StatelessWidget {
               child: LinearProgressIndicator(
                 value: emitidos / total,
                 minHeight: 8,
-                backgroundColor: MunchifyColors.primario.withAlpha(30),
+                backgroundColor: const Color(0x14FFFFFF),
+                color: MunchifyColors.claro,
               ),
             ),
             const SizedBox(height: 8),
@@ -154,16 +140,14 @@ class _GraficoSemana extends StatelessWidget {
     final dias = List.generate(7, (i) => DateTime(hoy.year, hoy.month, hoy.day).subtract(Duration(days: 6 - i)));
     final valores = <int>[
       for (final d in dias)
-        Metricas.entero(datos
-            .firstWhere((e) => e['dia'].toString().startsWith(fechaIso(d)), orElse: () => const {'canjes': 0})['canjes']),
+        Metricas.entero(datos.firstWhere((e) => e['dia'].toString().startsWith(fechaIso(d)),
+            orElse: () => const {'canjes': 0})['canjes']),
     ];
     final maximo = math.max(1, valores.reduce(math.max));
     const nombres = ['L', 'M', 'X', 'J', 'V', 'S', 'D'];
 
     return Card(
       elevation: 0,
-      color: MunchifyColors.superficie,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: Padding(
         padding: const EdgeInsets.fromLTRB(12, 16, 12, 10),
         child: SizedBox(
@@ -182,7 +166,7 @@ class _GraficoSemana extends StatelessWidget {
                         height: 100 * valores[i] / maximo + 2,
                         margin: const EdgeInsets.symmetric(horizontal: 6),
                         decoration: BoxDecoration(
-                          color: i == 6 ? MunchifyColors.primario : MunchifyColors.primario.withAlpha(110),
+                          color: i == 6 ? MunchifyColors.primario : const Color(0xFF52525B),
                           borderRadius: BorderRadius.circular(6),
                         ),
                       ),

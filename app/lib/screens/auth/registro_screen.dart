@@ -40,7 +40,16 @@ class _RegistroScreenState extends State<RegistroScreen> {
 
   @override
   void dispose() {
-    for (final c in [_nombre, _email, _password, _telefono, _instagram, _comercioNombre, _direccion, _comercioInstagram]) {
+    for (final c in [
+      _nombre,
+      _email,
+      _password,
+      _telefono,
+      _instagram,
+      _comercioNombre,
+      _direccion,
+      _comercioInstagram
+    ]) {
       c.dispose();
     }
     super.dispose();
@@ -105,9 +114,8 @@ class _RegistroScreenState extends State<RegistroScreen> {
               controller: _email,
               keyboardType: TextInputType.emailAddress,
               decoration: deco('Correo electrónico', icono: Icons.email_outlined),
-              validator: (v) => (v == null || !RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$').hasMatch(v.trim()))
-                  ? 'Correo no válido'
-                  : null,
+              validator: (v) =>
+                  (v == null || !RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$').hasMatch(v.trim())) ? 'Correo no válido' : null,
             ),
             const SizedBox(height: 12),
             TextFormField(
@@ -142,9 +150,7 @@ class _RegistroScreenState extends State<RegistroScreen> {
               DropdownButtonFormField<int>(
                 value: _categoriaId,
                 decoration: deco('Categoría', icono: Icons.category_outlined),
-                items: _categorias
-                    .map((c) => DropdownMenuItem<int>(value: c.id, child: Text(c.nombre)))
-                    .toList(),
+                items: _categorias.map((c) => DropdownMenuItem<int>(value: c.id, child: Text(c.nombre))).toList(),
                 onChanged: (v) => setState(() => _categoriaId = v),
                 validator: (v) => esComercio && v == null ? 'Selecciona una categoría' : null,
               ),

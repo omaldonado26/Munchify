@@ -142,13 +142,11 @@ class _RecompensasComercioScreenState extends State<RecompensasComercioScreen> {
                     final r = lista[i];
                     return Card(
                       elevation: 0,
-                      color: MunchifyColors.superficie,
                       margin: const EdgeInsets.symmetric(vertical: 6),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                       child: ListTile(
                         leading: CircleAvatar(
-                          backgroundColor: MunchifyColors.secundario.withAlpha(30),
-                          child: const Icon(Icons.card_giftcard, color: MunchifyColors.secundario),
+                          backgroundColor: const Color(0x0FFFFFFF),
+                          child: const Icon(Icons.card_giftcard_outlined, color: MunchifyColors.claro),
                         ),
                         title: Text(r.nombre, style: const TextStyle(fontWeight: FontWeight.bold)),
                         subtitle: Text('${r.costoPuntos} pts · stock ${r.stock} · ${r.vigenciaDias} días'

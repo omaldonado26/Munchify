@@ -1,4 +1,10 @@
 require('dotenv').config({ quiet: true });
+const path = require('path');
+
+// La ruta de la cuenta de servicio puede ser relativa a la carpeta backend/.
+const cuentaFirebase = process.env.FIREBASE_SERVICE_ACCOUNT
+  ? path.resolve(__dirname, '..', process.env.FIREBASE_SERVICE_ACCOUNT)
+  : '';
 
 module.exports = {
   port: Number(process.env.PORT || 3000),
@@ -14,5 +20,5 @@ module.exports = {
     secret: process.env.JWT_SECRET || 'munchify_dev_secret',
     expires: process.env.JWT_EXPIRES || '7d',
   },
-  firebaseServiceAccount: process.env.FIREBASE_SERVICE_ACCOUNT || '',
+  firebaseServiceAccount: cuentaFirebase,
 };
