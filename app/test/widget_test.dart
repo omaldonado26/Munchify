@@ -1,4 +1,3 @@
-// Pruebas unitarias de modelos y utilidades (no requieren servidor).
 import 'package:flutter_test/flutter_test.dart';
 import 'package:munchify/models/models.dart';
 import 'package:munchify/utils/formatos.dart';

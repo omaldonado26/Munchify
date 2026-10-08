@@ -13,7 +13,7 @@ async function main() {
   }
   iniciarTareaVencimientos();
   app.listen(config.port, '0.0.0.0', () => {
-    console.log(`🍔 Munchify API escuchando en http://localhost:${config.port}/api`);
+    console.log(` Munchify API escuchando en http://localhost:${config.port}/api`);
   });
 }
 

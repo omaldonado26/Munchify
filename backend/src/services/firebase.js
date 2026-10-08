@@ -8,7 +8,7 @@ if (config.firebaseServiceAccount && fs.existsSync(config.firebaseServiceAccount
   try {
     const { initializeApp, cert } = require('firebase-admin/app');
     app = initializeApp({ credential: cert(require(config.firebaseServiceAccount)) });
-    console.log('✔ Firebase habilitado (push e inicio de sesión con Google)');
+    console.log('✔ Firebase habilitado');
   } catch (e) {
     console.warn('⚠ No se pudo iniciar Firebase:', e.message);
   }
