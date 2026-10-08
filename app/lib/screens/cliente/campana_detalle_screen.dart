@@ -9,6 +9,7 @@ import '../../models/models.dart';
 import '../../providers/auth_provider.dart';
 import '../../services/api_service.dart';
 import '../../theme.dart';
+import '../../utils/compartir.dart';
 import '../../utils/formatos.dart';
 import '../../widgets/comunes.dart';
 import 'cupon_qr_screen.dart';
@@ -215,6 +216,7 @@ class _ParticipacionState extends State<_Participacion> {
   Uint8List? _captura;
   String? _nombreArchivo;
   bool _enviando = false;
+  bool _compartiendo = false;
 
   @override
   void dispose() {
@@ -234,6 +236,31 @@ class _ParticipacionState extends State<_Participacion> {
       });
     } catch (e) {
       if (mounted) mostrarMensaje(context, 'No se pudo abrir la imagen: $e', error: true);
+    }
+  }
+
+  /// Abre el menú de compartir del teléfono con la foto marcada y deja copiado un texto para la publicación.
+  Future<void> _compartir() async {
+    final foto = _captura;
+    if (foto == null) return;
+    final c = widget.campana;
+    final comercio = c.comercioNombre ?? '';
+    final mencion = (c.comercioInstagram ?? '').trim();
+    final texto = [
+      '${c.beneficio}${comercio.isEmpty ? '' : ' en $comercio'}',
+      if (mencion.isNotEmpty) mencion,
+      '#Munchify',
+    ].join(' ');
+    setState(() => _compartiendo = true);
+    try {
+      // Instagram suele descartar el texto que acompaña a la foto: queda en el portapapeles para pegarlo.
+      await Clipboard.setData(ClipboardData(text: texto));
+      if (mounted) mostrarMensaje(context, 'Texto copiado. Pégalo en tu publicación.');
+      await compartirFotoConMarca(foto, texto: texto);
+    } catch (e) {
+      if (mounted) mostrarMensaje(context, 'No se pudo compartir la foto: $e', error: true);
+    } finally {
+      if (mounted) setState(() => _compartiendo = false);
     }
   }
 
@@ -359,7 +386,7 @@ class _ParticipacionState extends State<_Participacion> {
             Text('Envía tu evidencia', style: Theme.of(context).textTheme.titleMedium),
             const SizedBox(height: 12),
             if (c.tipoEvidencia != 'enlace') ...[
-              if (_captura != null)
+              if (_captura != null) ...[
                 Stack(
                   children: [
                     ClipRRect(
@@ -375,8 +402,21 @@ class _ParticipacionState extends State<_Participacion> {
                       ),
                     ),
                   ],
-                )
-              else
+                ),
+                const SizedBox(height: 10),
+                OutlinedButton.icon(
+                  onPressed: _compartiendo ? null : _compartir,
+                  icon: _compartiendo
+                      ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2))
+                      : const Icon(Icons.ios_share),
+                  label: const Text('Compartir en redes'),
+                ),
+                const SizedBox(height: 6),
+                const Text(
+                  'Se comparte con la marca de Munchify. El comercio recibe tu foto original.',
+                  style: TextStyle(color: MunchifyColors.gris, fontSize: 13, height: 1.35),
+                ),
+              ] else
                 Row(
                   children: [
                     Expanded(
