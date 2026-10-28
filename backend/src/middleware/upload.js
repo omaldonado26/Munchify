@@ -1,3 +1,7 @@
+// QUÉ HACE ESTE ARCHIVO
+// Recibe las fotos de evidencia que suben los clientes y las guarda en la carpeta
+// uploads del servidor, con un nombre único. Solo acepta imágenes de hasta 8 MB.
+
 const path = require('path');
 const crypto = require('crypto');
 const multer = require('multer');

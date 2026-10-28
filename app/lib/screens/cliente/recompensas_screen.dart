@@ -1,3 +1,7 @@
+// QUÉ HACE ESTE ARCHIVO
+// Pestaña "Recompensas" del cliente: muestra sus puntos y el catálogo de premios
+// que puede canjear con ellos.
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 

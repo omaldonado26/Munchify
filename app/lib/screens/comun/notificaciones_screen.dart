@@ -1,3 +1,7 @@
+// QUÉ HACE ESTE ARCHIVO
+// Lista de notificaciones dentro de la app y el ícono de campana con el contador
+// de no leídas. Lo usan tanto el cliente como el comercio.
+
 import 'package:flutter/material.dart';
 
 import '../../models/models.dart';

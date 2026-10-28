@@ -1,3 +1,7 @@
+// QUÉ HACE ESTE ARCHIVO
+// Pantalla principal del comercio: la barra inferior con sus pestañas
+// (panel, campañas, validar evidencias y canjear cupones).
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 

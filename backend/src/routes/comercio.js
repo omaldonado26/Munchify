@@ -1,3 +1,8 @@
+// QUÉ HACE ESTE ARCHIVO
+// Rutas exclusivas del comercio (/api/comercio): su perfil, sus campañas, revisar
+// (aprobar o rechazar) evidencias, consultar y canjear cupones, ver las métricas
+// del panel y administrar sus recompensas.
+
 const router = require('express').Router();
 const { query, transaction } = require('../db/pool');
 const { auth, role } = require('../middleware/auth');

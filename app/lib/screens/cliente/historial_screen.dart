@@ -1,3 +1,7 @@
+// QUÉ HACE ESTE ARCHIVO
+// Historial del cliente: sus participaciones, sus cupones y los puntos
+// que ha ganado y gastado.
+
 import 'package:flutter/material.dart';
 
 import '../../models/models.dart';

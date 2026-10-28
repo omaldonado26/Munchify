@@ -1,3 +1,7 @@
+// QUÉ HACE ESTE ARCHIVO
+// Pestaña "Canjear" del comercio: escanea el QR del cliente o escribe el código,
+// muestra los datos del cupón y confirma el canje.
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 

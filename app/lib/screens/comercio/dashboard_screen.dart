@@ -1,3 +1,7 @@
+// QUÉ HACE ESTE ARCHIVO
+// Pestaña "Panel" del comercio: métricas (campañas activas, participantes, cupones
+// emitidos y canjeados), el gráfico de canjes de la semana y el rendimiento por campaña.
+
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';

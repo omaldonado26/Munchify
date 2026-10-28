@@ -1,3 +1,7 @@
+// QUÉ HACE ESTE ARCHIVO
+// Rutas que usa el cliente (/api): sus cupones, su historial, el catálogo de
+// recompensas, el canje de puntos por una recompensa y sus notificaciones.
+
 const router = require('express').Router();
 const { query, transaction } = require('../db/pool');
 const { auth, role } = require('../middleware/auth');

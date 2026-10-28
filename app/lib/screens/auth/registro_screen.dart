@@ -1,3 +1,7 @@
+// QUÉ HACE ESTE ARCHIVO
+// Pantalla para crear una cuenta nueva, como cliente o como comercio
+// (en ese caso pide también los datos del negocio).
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 

@@ -1,3 +1,7 @@
+// QUÉ HACE ESTE ARCHIVO
+// Pantalla principal del cliente: la barra inferior con sus pestañas
+// (explorar, mis cupones, recompensas y perfil) y la barra superior con el logo.
+
 import 'package:flutter/material.dart';
 
 import '../../widgets/comunes.dart';

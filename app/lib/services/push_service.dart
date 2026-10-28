@@ -1,3 +1,7 @@
+// QUÉ HACE ESTE ARCHIVO
+// Recibe las notificaciones push de Firebase: pide el permiso, registra el teléfono
+// en el servidor, muestra un aviso si la app está abierta y pide refrescar los datos.
+
 import 'dart:async';
 
 import 'package:firebase_core/firebase_core.dart';

@@ -1,3 +1,7 @@
+// QUÉ HACE ESTE ARCHIVO
+// Pestaña "Validar" del comercio: muestra las evidencias que enviaron los clientes
+// y permite aprobarlas (se genera el cupón) o rechazarlas con un motivo.
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 

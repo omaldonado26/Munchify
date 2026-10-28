@@ -1,3 +1,8 @@
+// QUÉ HACE ESTE ARCHIVO
+// Es el único lugar por donde la app habla con el servidor. Tiene una función por
+// cada cosa que se le puede pedir (iniciar sesión, listar campañas, enviar evidencia,
+// canjear un cupón, etc.) y adjunta el JWT en cada petición.
+
 import 'dart:convert';
 import 'dart:typed_data';
 

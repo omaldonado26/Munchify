@@ -1,3 +1,8 @@
+// QUÉ HACE ESTE ARCHIVO
+// Prueba automática del recorrido principal: registra usuarios, crea una campaña,
+// envía una evidencia, la aprueba y canjea el cupón, para confirmar que el servidor
+// funciona de principio a fin (npm run test:smoke).
+
 // Prueba de extremo a extremo del flujo principal de Munchify.
 // Requiere la API corriendo (npm start) con los datos demo (npm run db:seed).
 // Uso: npm run test:smoke   (o API_URL=http://host:3000/api npm run test:smoke)

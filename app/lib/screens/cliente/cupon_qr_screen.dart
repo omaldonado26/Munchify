@@ -1,3 +1,6 @@
+// QUÉ HACE ESTE ARCHIVO
+// Muestra un cupón en grande con su código QR, para que el comercio lo escanee.
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:qr_flutter/qr_flutter.dart';

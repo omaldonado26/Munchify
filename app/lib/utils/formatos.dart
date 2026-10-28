@@ -1,3 +1,7 @@
+// QUÉ HACE ESTE ARCHIVO
+// Ayudas de texto: dar formato a fechas ("24 sep 2026", "Vence en 3 días"), traducir
+// los estados y catálogos a palabras legibles, y elegir el color e ícono de cada uno.
+
 import 'package:flutter/material.dart';
 
 import '../theme.dart';

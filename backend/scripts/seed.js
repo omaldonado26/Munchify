@@ -1,3 +1,7 @@
+// QUÉ HACE ESTE ARCHIVO
+// Carga datos de demostración (comercios, clientes, campañas y recompensas) para
+// poder probar la app sin crear todo a mano (npm run db:seed).
+
 // Carga datos de demostración: 3 comercios, 2 clientes, campañas, recompensas y actividad.
 // Contraseña de todos los usuarios demo: 123456
 const bcrypt = require('bcryptjs');

@@ -1,3 +1,7 @@
+// QUÉ HACE ESTE ARCHIVO
+// Define la forma de los datos que llegan del servidor (usuario, campaña, cupón,
+// evidencia, recompensa, notificación, puntos y métricas) y cómo convertir su JSON en objetos.
+
 // Modelos de datos de Munchify. Todos se construyen a partir del JSON de la API.
 
 int _int(dynamic v) {

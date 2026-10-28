@@ -1,3 +1,8 @@
+// QUÉ HACE ESTE ARCHIVO
+// Es la conexión con la base de datos MySQL. Mantiene un grupo de conexiones abiertas
+// y ofrece dos funciones: query (ejecutar una consulta) y transaction (ejecutar varias
+// consultas juntas, de modo que se guardan todas o ninguna).
+
 const mysql = require('mysql2/promise');
 const config = require('../config');
 

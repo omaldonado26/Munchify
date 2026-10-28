@@ -1,3 +1,7 @@
+// QUÉ HACE ESTE ARCHIVO
+// El logo de Munchify listo para usar en cualquier pantalla: el tenedor rojo,
+// el nombre y la combinación de ambos.
+
 import 'package:flutter/material.dart';
 
 import '../theme.dart';

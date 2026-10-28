@@ -1,3 +1,8 @@
+// QUÉ HACE ESTE ARCHIVO
+// Rutas de cuentas y sesión (/api/auth): registro, inicio de sesión con correo y
+// contraseña, inicio de sesión con Google, ver y editar el perfil, y registrar el
+// teléfono para recibir notificaciones push. Aquí se crea el JWT de la sesión.
+
 const router = require('express').Router();
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');

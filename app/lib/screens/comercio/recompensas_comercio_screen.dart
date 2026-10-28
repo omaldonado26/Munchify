@@ -1,3 +1,7 @@
+// QUÉ HACE ESTE ARCHIVO
+// Pantalla donde el comercio crea y edita las recompensas que los clientes
+// canjean con puntos (nombre, costo en puntos, existencias y vigencia del cupón).
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 

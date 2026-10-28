@@ -1,3 +1,8 @@
+// QUÉ HACE ESTE ARCHIVO
+// Rutas de promociones (/api/campanas): listar las vigentes, ver el detalle, crear,
+// editar y pausar campañas (comercio), y enviar la evidencia de participación (cliente).
+// Al crear una campaña se avisa por notificación push a todos los clientes.
+
 const router = require('express').Router();
 const { query, transaction } = require('../db/pool');
 const { auth, role } = require('../middleware/auth');

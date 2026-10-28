@@ -1,3 +1,7 @@
+// QUÉ HACE ESTE ARCHIVO
+// Pestaña "Explorar" del cliente: lista las promociones vigentes, con buscador,
+// filtro por categoría y el resumen de puntos y promociones por vencer.
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 

@@ -1,3 +1,7 @@
+// QUÉ HACE ESTE ARCHIVO
+// Pantalla de apertura: anima el logo al abrir la app y luego pasa a la pantalla
+// que corresponda. Se puede saltar tocando la pantalla.
+
 import 'package:flutter/material.dart';
 
 import '../../theme.dart';

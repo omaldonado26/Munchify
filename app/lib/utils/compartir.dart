@@ -1,3 +1,7 @@
+// QUÉ HACE ESTE ARCHIVO
+// Pone la marca de agua de Munchify (logo pequeño, arriba y centrado) sobre una copia
+// de la foto y abre el menú del teléfono para compartirla en Instagram, WhatsApp, etc.
+
 import 'dart:math' as math;
 import 'dart:ui' as ui;
 

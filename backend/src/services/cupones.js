@@ -1,3 +1,8 @@
+// QUÉ HACE ESTE ARCHIVO
+// Reglas de negocio de cupones y puntos: crear un cupón con código único, sumar o
+// restar puntos dejando registro, y aprobar una evidencia (comprueba que queden
+// cupones en la campaña, emite el cupón, da los puntos y avisa al cliente).
+
 const { HttpError, generarCodigo } = require('../utils');
 const { notificar } = require('./notificaciones');
 

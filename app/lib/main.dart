@@ -1,3 +1,8 @@
+// QUÉ HACE ESTE ARCHIVO
+// Es donde arranca la app. Inicia las notificaciones push, aplica el tema oscuro,
+// muestra el logo animado y decide qué pantalla abrir: inicio de sesión, la del
+// cliente o la del comercio, según haya sesión y cuál sea el rol.
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 

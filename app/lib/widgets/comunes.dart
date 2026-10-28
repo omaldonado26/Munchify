@@ -1,3 +1,8 @@
+// QUÉ HACE ESTE ARCHIVO
+// Piezas visuales que se reutilizan en muchas pantallas: tarjetas de promoción y de
+// datos, la barra inferior de cristal, las pestañas que conservan su estado, los
+// avisos de "vacío" y de error, y FuturoRecargable (carga datos y los refresca).
+
 import 'dart:math' as math;
 import 'dart:ui' show ImageFilter;
 

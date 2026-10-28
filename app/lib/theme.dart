@@ -1,3 +1,7 @@
+// QUÉ HACE ESTE ARCHIVO
+// Define el aspecto de toda la app: la paleta de colores (negro, blanco y rojo
+// Munchify), la tipografía Manrope y el estilo de botones, tarjetas y campos.
+
 import 'package:flutter/material.dart';
 
 /// Paleta de marca (modo oscuro): negro profundo, texto blanco y rojo Munchify solo como acento.

@@ -1,3 +1,8 @@
+// QUÉ HACE ESTE ARCHIVO
+// Es el "guardia" de las rutas protegidas. Revisa el JWT que envía la app, carga los
+// datos del usuario (y de su comercio, si lo tiene) y, con role(), permite restringir
+// una ruta a ciertos roles: cliente, comercio o admin.
+
 const jwt = require('jsonwebtoken');
 const config = require('../config');
 const { query } = require('../db/pool');

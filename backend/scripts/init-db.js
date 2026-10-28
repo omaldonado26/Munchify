@@ -1,3 +1,7 @@
+// QUÉ HACE ESTE ARCHIVO
+// Crea la base de datos y todas sus tablas desde cero (npm run db:init).
+// CUIDADO: borra las tablas existentes con todos sus datos. Solo para una instalación nueva.
+
 // Crea la base de datos y sus tablas a partir de src/db/schema.sql
 const fs = require('fs');
 const path = require('path');

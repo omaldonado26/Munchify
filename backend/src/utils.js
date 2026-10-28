@@ -1,3 +1,8 @@
+// QUÉ HACE ESTE ARCHIVO
+// Funciones pequeñas que usan varias rutas: el error con código HTTP (HttpError),
+// el generador de códigos de cupón (MCH-XXXX-XXXX), la validación de campos
+// obligatorios y la conversión segura de textos a números enteros.
+
 const crypto = require('crypto');
 
 class HttpError extends Error {

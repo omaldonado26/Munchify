@@ -1,3 +1,8 @@
+// QUÉ HACE ESTE ARCHIVO
+// Envía avisos a los usuarios: guarda la notificación que se ve dentro de la app y,
+// si Firebase está activo, manda además el push al teléfono. Puede avisar a una
+// persona (notificar) o a todos los clientes a la vez (notificarAClientes).
+
 const { query } = require('../db/pool');
 const { messaging } = require('./firebase');
 

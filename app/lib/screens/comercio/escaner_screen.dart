@@ -1,3 +1,6 @@
+// QUÉ HACE ESTE ARCHIVO
+// Abre la cámara para leer un código QR y devuelve el texto leído.
+
 import 'package:flutter/material.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 

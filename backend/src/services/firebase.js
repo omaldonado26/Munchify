@@ -1,3 +1,8 @@
+// QUÉ HACE ESTE ARCHIVO
+// Conecta el servidor con Firebase usando la llave privada firebase-cuenta.json.
+// Entrega dos herramientas: una para enviar notificaciones push y otra para comprobar
+// los inicios de sesión con Google. Si no hay llave, Firebase queda desactivado.
+
 const fs = require('fs');
 const config = require('../config');
 

@@ -1,3 +1,7 @@
+// QUÉ HACE ESTE ARCHIVO
+// Formulario para crear o editar una campaña: título, beneficio, red social,
+// tipo de evidencia, fechas, cantidad de cupones y puntos que otorga.
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 

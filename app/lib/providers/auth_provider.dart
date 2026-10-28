@@ -1,3 +1,8 @@
+// QUÉ HACE ESTE ARCHIVO
+// Maneja la sesión: iniciar sesión (correo o Google), registrarse y cerrar sesión.
+// Guarda el JWT en el teléfono para que la sesión siga abierta al reabrir la app
+// y avisa a las pantallas cuando cambian el usuario o sus puntos.
+
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 

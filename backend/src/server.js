@@ -1,3 +1,8 @@
+// QUÉ HACE ESTE ARCHIVO
+// Es el punto de arranque del servidor (lo que corre con "npm start").
+// Comprueba que MySQL responda, enciende la tarea automática de vencimientos
+// y deja el servidor escuchando peticiones en el puerto configurado.
+
 const app = require('./app');
 const config = require('./config');
 const { pool } = require('./db/pool');

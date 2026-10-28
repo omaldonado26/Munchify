@@ -1,3 +1,7 @@
+// QUÉ HACE ESTE ARCHIVO
+// Pantalla de inicio de sesión: correo y contraseña, botón "Continuar con Google",
+// enlace para registrarse y el engranaje para cambiar el servidor.
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 

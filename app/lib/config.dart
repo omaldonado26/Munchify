@@ -1,3 +1,7 @@
+// QUÉ HACE ESTE ARCHIVO
+// Decide a qué servidor se conecta la app. Usa la dirección con la que se generó
+// el APK (API_URL) o la que la persona guarde desde el engranaje del inicio de sesión.
+
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -18,7 +22,8 @@ class AppConfig {
   static String porDefecto() {
     if (_urlDefinida.isNotEmpty) return _urlDefinida;
     if (kIsWeb) return 'http://localhost:3000';
-    if (defaultTargetPlatform == TargetPlatform.android) return 'http://10.0.2.2:3000';
+    if (defaultTargetPlatform == TargetPlatform.android)
+      return 'http://10.0.2.2:3000';
     return 'http://localhost:3000';
   }
 
@@ -43,7 +48,8 @@ class AppConfig {
     while (limpio.endsWith('/')) {
       limpio = limpio.substring(0, limpio.length - 1);
     }
-    if (limpio.endsWith('/api')) limpio = limpio.substring(0, limpio.length - 4);
+    if (limpio.endsWith('/api'))
+      limpio = limpio.substring(0, limpio.length - 4);
     servidor = limpio.isEmpty ? porDefecto() : limpio;
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(_clave, servidor);

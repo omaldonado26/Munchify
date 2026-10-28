@@ -1,3 +1,8 @@
+// QUÉ HACE ESTE ARCHIVO
+// Tarea automática que corre cada hora: marca como vencidos los cupones caducados,
+// finaliza las campañas vencidas o agotadas y recuerda a los clientes los cupones
+// que vencen en las próximas 24 horas.
+
 const { query } = require('../db/pool');
 const { notificar } = require('./notificaciones');
 
