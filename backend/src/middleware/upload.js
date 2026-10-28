@@ -1,7 +1,3 @@
-// QUÉ HACE ESTE ARCHIVO
-// Recibe las fotos de evidencia que suben los clientes y las guarda en la carpeta
-// uploads del servidor, con un nombre único. Solo acepta imágenes de hasta 8 MB.
-
 const path = require('path');
 const crypto = require('crypto');
 const multer = require('multer');
@@ -19,7 +15,7 @@ const storage = multer.diskStorage({
 
 const upload = multer({
   storage,
-  limits: { fileSize: 8 * 1024 * 1024 }, // 8 MB
+  limits: { fileSize: 8 * 1024 * 1024 },
   fileFilter: (_req, file, cb) => {
     const okMime = /^image\//.test(file.mimetype) || file.mimetype === 'application/octet-stream';
     const okExt = /\.(jpe?g|png|webp|heic|gif)$/i.test(file.originalname);

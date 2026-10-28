@@ -1,8 +1,3 @@
-// QUÉ HACE ESTE ARCHIVO
-// Rutas exclusivas del comercio (/api/comercio): su perfil, sus campañas, revisar
-// (aprobar o rechazar) evidencias, consultar y canjear cupones, ver las métricas
-// del panel y administrar sus recompensas.
-
 const router = require('express').Router();
 const { query, transaction } = require('../db/pool');
 const { auth, role } = require('../middleware/auth');
@@ -11,8 +6,6 @@ const { aprobarEvidencia } = require('../services/cupones');
 const { notificar } = require('../services/notificaciones');
 
 router.use(auth, role('comercio'));
-
-/* ------------------------------ Perfil ------------------------------ */
 
 router.get('/perfil', async (req, res) => {
   const [co] = await query(
@@ -36,9 +29,6 @@ router.put('/perfil', async (req, res) => {
   res.json(co);
 });
 
-/* ----------------------------- Campañas ----------------------------- */
-
-/** GET /api/comercio/campanas — todas mis campañas con sus contadores */
 router.get('/campanas', async (req, res) => {
   const rows = await query(
     `SELECT c.*, (c.cantidad_disponible - c.cupones_emitidos) AS cupones_restantes,
@@ -53,9 +43,6 @@ router.get('/campanas', async (req, res) => {
   res.json(rows);
 });
 
-/* ---------------------------- Evidencias ---------------------------- */
-
-/** GET /api/comercio/evidencias?estado=pendiente&campana_id= */
 router.get('/evidencias', async (req, res) => {
   const where = ['c.comercio_id = ?'];
   const params = [req.user.comercio_id];
@@ -84,14 +71,12 @@ async function evidenciaPropia(req) {
   return ev;
 }
 
-/** POST /api/comercio/evidencias/:id/aprobar — valida la acción y emite el cupón */
 router.post('/evidencias/:id/aprobar', async (req, res) => {
   const ev = await evidenciaPropia(req);
   const cupon = await transaction((conn) => aprobarEvidencia(conn, ev.id, req.user.id));
   res.json({ evidencia_id: ev.id, estado: 'aprobada', cupon });
 });
 
-/** POST /api/comercio/evidencias/:id/rechazar { motivo } */
 router.post('/evidencias/:id/rechazar', async (req, res) => {
   const ev = await evidenciaPropia(req);
   if (ev.estado !== 'pendiente') throw new HttpError(409, `La evidencia ya fue ${ev.estado}`);
@@ -103,8 +88,6 @@ router.post('/evidencias/:id/rechazar', async (req, res) => {
   await notificar(ev.usuario_id, 'Evidencia rechazada', `Tu participación en "${ev.titulo}" fue rechazada: ${motivo}`, 'evidencia');
   res.json({ evidencia_id: ev.id, estado: 'rechazada', motivo });
 });
-
-/* ------------------------------ Cupones ----------------------------- */
 
 async function buscarCupon(codigo, comercioId, conn = null, lock = false) {
   const sql = `SELECT cu.*, u.nombre AS usuario_nombre, c.titulo AS campana_titulo, r.nombre AS recompensa_nombre
@@ -121,14 +104,12 @@ async function buscarCupon(codigo, comercioId, conn = null, lock = false) {
   return cupon;
 }
 
-/** GET /api/comercio/cupones/:codigo — consulta un cupón antes de canjearlo */
 router.get('/cupones/:codigo', async (req, res) => {
   const cupon = await buscarCupon(req.params.codigo, req.user.comercio_id);
   const vencido = cupon.estado === 'activo' && new Date(cupon.fecha_vencimiento.replace(' ', 'T')) < new Date();
   res.json({ ...cupon, estado: vencido ? 'vencido' : cupon.estado, canjeable: cupon.estado === 'activo' && !vencido });
 });
 
-/** POST /api/comercio/cupones/canjear { codigo } — marca el cupón como utilizado */
 router.post('/cupones/canjear', async (req, res) => {
   requerir(req.body || {}, ['codigo']);
   const cupon = await transaction(async (conn) => {
@@ -147,7 +128,6 @@ router.post('/cupones/canjear', async (req, res) => {
   res.json({ ok: true, mensaje: 'Cupón canjeado correctamente', cupon });
 });
 
-/** GET /api/comercio/canjes — últimos cupones canjeados */
 router.get('/canjes', async (req, res) => {
   const rows = await query(
     `SELECT cu.id, cu.codigo, cu.beneficio, cu.origen, cu.fecha_canje, u.nombre AS usuario_nombre
@@ -158,9 +138,6 @@ router.get('/canjes', async (req, res) => {
   res.json(rows);
 });
 
-/* ------------------------------ Métricas ---------------------------- */
-
-/** GET /api/comercio/metricas — panel de rendimiento de campañas */
 router.get('/metricas', async (req, res) => {
   const id = req.user.comercio_id;
   const [resumen] = await query(
@@ -196,8 +173,6 @@ router.get('/metricas', async (req, res) => {
 
   res.json({ resumen, por_campana: porCampana, canjes_ultimos_7_dias: ultimos7dias });
 });
-
-/* ---------------------------- Recompensas --------------------------- */
 
 router.get('/recompensas', async (req, res) => {
   res.json(await query('SELECT * FROM recompensas WHERE comercio_id=? ORDER BY creado_en DESC', [req.user.comercio_id]));

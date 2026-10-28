@@ -1,8 +1,3 @@
-// QUÉ HACE ESTE ARCHIVO
-// Piezas visuales que se reutilizan en muchas pantallas: tarjetas de promoción y de
-// datos, la barra inferior de cristal, las pestañas que conservan su estado, los
-// avisos de "vacío" y de error, y FuturoRecargable (carga datos y los refresca).
-
 import 'dart:math' as math;
 import 'dart:ui' show ImageFilter;
 
@@ -13,7 +8,6 @@ import '../theme.dart';
 import '../utils/formatos.dart';
 import '../utils/refresco.dart';
 
-/// Decoración estándar de los campos de formulario.
 InputDecoration deco(String etiqueta, {IconData? icono, String? ayuda, String? sufijo}) => InputDecoration(
       labelText: etiqueta,
       helperText: ayuda,
@@ -116,8 +110,6 @@ class VistaError extends StatelessWidget {
   }
 }
 
-/// Indica a los widgets de una pestaña si esa pestaña es la visible.
-/// Fuera de las pestañas (pantallas abiertas encima) se considera siempre visible.
 class PestanaVisible extends InheritedWidget {
   final bool visible;
   const PestanaVisible({super.key, required this.visible, required super.child});
@@ -129,9 +121,6 @@ class PestanaVisible extends InheritedWidget {
   bool updateShouldNotify(PestanaVisible old) => old.visible != visible;
 }
 
-/// Contenido de una barra de pestañas que conserva el estado de cada pestaña.
-/// Cada pestaña se construye la primera vez que se visita y después se mantiene viva,
-/// así cambiar de pestaña es instantáneo (tab-bars.md: preservar el estado de cada sección).
 class PestanasPerezosas extends StatefulWidget {
   final int indice;
   final List<Widget> pestanas;
@@ -151,7 +140,6 @@ class _PestanasPerezosasState extends State<PestanasPerezosas> {
       index: widget.indice,
       children: [
         for (var i = 0; i < widget.pestanas.length; i++)
-          // Las pestañas ocultas no animan ni reciben foco, y avisan a su contenido que no están visibles.
           TickerMode(
             enabled: i == widget.indice,
             child: PestanaVisible(
@@ -164,9 +152,6 @@ class _PestanasPerezosasState extends State<PestanasPerezosas> {
   }
 }
 
-/// Carga un Future, muestra spinner/error y permite recargar (pull-to-refresh).
-/// Dentro de [PestanasPerezosas], al volver a la pestaña se actualiza en silencio:
-/// se siguen mostrando los datos anteriores mientras llegan los nuevos.
 class FuturoRecargable<T> extends StatefulWidget {
   final Future<T> Function() cargar;
   final Widget Function(BuildContext context, T datos, Future<void> Function() recargar) builder;
@@ -180,7 +165,7 @@ class FuturoRecargable<T> extends StatefulWidget {
 class _FuturoRecargableState<T> extends State<FuturoRecargable<T>> {
   late Future<T> _futuro;
   bool? _visible;
-  T? _ultimo; // últimos datos buenos: se siguen mostrando si una actualización en silencio falla
+  T? _ultimo;
 
   @override
   void initState() {
@@ -195,10 +180,8 @@ class _FuturoRecargableState<T> extends State<FuturoRecargable<T>> {
     super.dispose();
   }
 
-  // Llegó un push o la app volvió al primer plano: se actualiza sin mostrar el indicador de carga.
   void _alPedirRefresco() {
     if (!mounted) return;
-    // Las pestañas ocultas no piden nada ahora: ya se actualizan solas al volver a mostrarse.
     if (_visible == false) return;
     setState(() => _futuro = widget.cargar());
   }
@@ -207,7 +190,6 @@ class _FuturoRecargableState<T> extends State<FuturoRecargable<T>> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     final visible = PestanaVisible.of(context);
-    // Al volver a esta pestaña se piden datos nuevos; FutureBuilder conserva los anteriores mientras tanto.
     if (_visible == false && visible) _futuro = widget.cargar();
     _visible = visible;
   }
@@ -238,8 +220,6 @@ class _FuturoRecargableState<T> extends State<FuturoRecargable<T>> {
   }
 }
 
-/// Tarjeta de indicador para los paneles. El ícono es neutro: el color se reserva para
-/// [color], que solo debe usarse cuando el dato es un aviso (p. ej. cupones vencidos).
 class TarjetaDato extends StatelessWidget {
   final String titulo;
   final String valor;
@@ -284,7 +264,6 @@ class TarjetaDato extends StatelessWidget {
   }
 }
 
-/// Cuadrícula de dos columnas cuyas filas crecen con el contenido (respeta el tamaño de texto del sistema).
 class CuadriculaDatos extends StatelessWidget {
   final List<Widget> children;
   final double espacio;
@@ -310,8 +289,6 @@ class CuadriculaDatos extends StatelessWidget {
   }
 }
 
-/// Superficie de contenido: fondo oscuro, borde fino y esquinas suaves.
-/// Con "Aumentar contraste" del sistema el borde se refuerza para que la tarjeta siga delimitada.
 class SuperficieCristal extends StatelessWidget {
   final Widget child;
   final EdgeInsetsGeometry? padding;
@@ -344,8 +321,6 @@ class SuperficieCristal extends StatelessWidget {
   }
 }
 
-/// Barra de navegación inferior de cristal: es la única superficie con desenfoque (capa funcional).
-/// Con "Aumentar contraste" pasa a ser opaca.
 class BarraCristal extends StatelessWidget {
   final NavigationBar child;
   const BarraCristal({super.key, required this.child});
@@ -372,11 +347,8 @@ class BarraCristal extends StatelessWidget {
   }
 }
 
-/// Espacio que deben dejar al final las listas que pasan por debajo de [BarraCristal].
 const double espacioBarraCristal = 96;
 
-/// Resumen discreto en la cabecera de Explorar: puntos del cliente y estado de las promociones.
-/// Se adapta al tamaño de texto del sistema (sin altura fija).
 class BentoResumen extends StatelessWidget {
   final int puntos;
   final int promociones;
@@ -463,8 +435,6 @@ class _Dato extends StatelessWidget {
   }
 }
 
-/// Tarjeta de promoción del listado del cliente. Es el elemento distintivo de la app: un cupón
-/// con línea de corte. El rojo se reserva para el beneficio, que es lo que el cliente gana.
 class TarjetaCampana extends StatelessWidget {
   final Campana campana;
   final VoidCallback onTap;
@@ -488,7 +458,6 @@ class TarjetaCampana extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              // Encabezado: comercio, título y flecha de navegación (convención de fila de lista)
               Padding(
                 padding: const EdgeInsets.fromLTRB(16, 16, 12, 12),
                 child: Row(
@@ -546,7 +515,6 @@ class TarjetaCampana extends StatelessWidget {
                 ),
               ),
 
-              // Beneficio: la cara del cupón, único bloque con color de marca
               Container(
                 margin: const EdgeInsets.symmetric(horizontal: 16),
                 padding: const EdgeInsets.fromLTRB(14, 12, 12, 12),
@@ -582,7 +550,6 @@ class TarjetaCampana extends StatelessWidget {
               const SizedBox(height: 14),
               const _Perforacion(color: MunchifyColors.bordeSuave),
 
-              // Pie: dónde se participa, vigencia y cupones restantes
               Padding(
                 padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
                 child: Column(
@@ -628,7 +595,6 @@ class TarjetaCampana extends StatelessWidget {
   }
 }
 
-/// Barra fina de cupones disponibles.
 class _BarraDisponibles extends StatelessWidget {
   final double valor;
   final bool alerta;
@@ -636,7 +602,7 @@ class _BarraDisponibles extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = alerta ? MunchifyColors.alerta : const Color(0xB3FAFAFA); // neutra: el rojo queda para el beneficio
+    final color = alerta ? MunchifyColors.alerta : const Color(0xB3FAFAFA);
     return Container(
       height: 4,
       decoration: BoxDecoration(color: const Color(0x14FFFFFF), borderRadius: BorderRadius.circular(2)),
@@ -656,7 +622,6 @@ class _BarraDisponibles extends StatelessWidget {
   }
 }
 
-/// Etiqueta pequeña con ícono de línea, para los datos de la tarjeta.
 class _Pastilla extends StatelessWidget {
   final IconData icono;
   final String texto;
@@ -692,7 +657,6 @@ class _Pastilla extends StatelessWidget {
   }
 }
 
-/// Línea punteada con muescas laterales, como el corte de un cupón.
 class _Perforacion extends StatelessWidget {
   final Color color;
   const _Perforacion({required this.color});

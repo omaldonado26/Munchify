@@ -1,8 +1,3 @@
-// QUÉ HACE ESTE ARCHIVO
-// Es el único lugar por donde la app habla con el servidor. Tiene una función por
-// cada cosa que se le puede pedir (iniciar sesión, listar campañas, enviar evidencia,
-// canjear un cupón, etc.) y adjunta el JWT en cada petición.
-
 import 'dart:convert';
 import 'dart:typed_data';
 
@@ -20,14 +15,12 @@ class ApiException implements Exception {
   String toString() => mensaje;
 }
 
-/// Cliente de la API REST de Munchify.
 class ApiService {
   ApiService._();
   static final ApiService instancia = ApiService._();
 
   String? token;
 
-  /// Se invoca cuando el servidor responde 401 con una sesión activa (token vencido).
   void Function()? onSesionExpirada;
 
   Uri _uri(String ruta, [Map<String, String>? query]) {
@@ -36,7 +29,6 @@ class ApiService {
     return uri.replace(queryParameters: query);
   }
 
-  /// Evita la página de aviso que ngrok (plan gratuito) intercala en las peticiones.
   static const Map<String, String> cabecerasTunel = {'ngrok-skip-browser-warning': '1'};
 
   Map<String, String> _headers() => {
@@ -100,12 +92,9 @@ class ApiService {
   List<Map<String, dynamic>> _lista(dynamic data) =>
       (data as List).map((e) => Map<String, dynamic>.from(e as Map)).toList();
 
-  // ----------------------------- Autenticación -----------------------------
-
   Future<Map<String, dynamic>> login(String email, String password) async =>
       Map<String, dynamic>.from(await post('/auth/login', {'email': email, 'password': password}) as Map);
 
-  /// Intercambia el ID token de Firebase (cuenta de Google) por la sesión de Munchify.
   Future<Map<String, dynamic>> loginGoogle(String idTokenFirebase) async =>
       Map<String, dynamic>.from(await post('/auth/google', {'idToken': idTokenFirebase}) as Map);
 
@@ -117,11 +106,7 @@ class ApiService {
   Future<Usuario> actualizarPerfil(Map<String, dynamic> datos) async =>
       Usuario.fromJson(Map<String, dynamic>.from(await put('/auth/me', datos) as Map));
 
-  // ------------------------------- Catálogos -------------------------------
-
   Future<List<Categoria>> categorias() async => _lista(await get('/categorias')).map(Categoria.fromJson).toList();
-
-  // ------------------------------- Campañas --------------------------------
 
   Future<List<Campana>> campanas({int? categoriaId, String? busqueda}) async {
     final q = <String, String>{};
@@ -140,7 +125,6 @@ class ApiService {
 
   Future<void> cambiarEstadoCampana(int id, String estado) => patch('/campanas/$id/estado', {'estado': estado});
 
-  /// Envía la evidencia. Devuelve {evidencia_id, estado, cupon}.
   Future<Map<String, dynamic>> enviarEvidencia(
     int campanaId, {
     String? enlace,
@@ -155,8 +139,6 @@ class ApiService {
         archivo: captura, nombreArchivo: nombreArchivo);
     return Map<String, dynamic>.from(data as Map);
   }
-
-  // -------------------------------- Cliente --------------------------------
 
   Future<List<Cupon>> misCupones({String? estado}) async => _lista(
         await get('/cupones', query: estado == null ? null : {'estado': estado}),
@@ -182,10 +164,7 @@ class ApiService {
 
   Future<void> marcarNotificacionesLeidas() => patch('/notificaciones/leer-todas');
 
-  /// Asocia (o desvincula con `null`) el token de push de este dispositivo al usuario en sesión.
   Future<void> registrarTokenPush(String? token) => put('/auth/fcm-token', {'token': token});
-
-  // -------------------------------- Comercio -------------------------------
 
   Future<List<Campana>> misCampanas() async =>
       _lista(await get('/comercio/campanas')).map(Campana.fromJson).toList();

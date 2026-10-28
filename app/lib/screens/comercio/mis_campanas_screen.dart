@@ -1,7 +1,3 @@
-// QUÉ HACE ESTE ARCHIVO
-// Pestaña "Campañas" del comercio: lista sus campañas y permite crear una nueva,
-// editarla, pausarla, reactivarla, finalizarla o ver sus evidencias.
-
 import 'package:flutter/material.dart';
 
 import '../../models/models.dart';

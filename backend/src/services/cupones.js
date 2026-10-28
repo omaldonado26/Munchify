@@ -1,12 +1,6 @@
-// QUÉ HACE ESTE ARCHIVO
-// Reglas de negocio de cupones y puntos: crear un cupón con código único, sumar o
-// restar puntos dejando registro, y aprobar una evidencia (comprueba que queden
-// cupones en la campaña, emite el cupón, da los puntos y avisa al cliente).
-
 const { HttpError, generarCodigo } = require('../utils');
 const { notificar } = require('./notificaciones');
 
-/** Inserta un cupón con un código único (reintenta si hay colisión). */
 async function insertarCupon(conn, datos) {
   for (let intento = 0; intento < 5; intento++) {
     const codigo = generarCodigo();
@@ -28,7 +22,6 @@ async function insertarCupon(conn, datos) {
   throw new HttpError(500, 'No se pudo generar un código único');
 }
 
-/** Suma (o resta) puntos al usuario y deja registro del movimiento. */
 async function moverPuntos(conn, usuarioId, puntos, concepto, cuponId = null) {
   if (!puntos) return;
   await conn.query('UPDATE usuarios SET puntos = puntos + ? WHERE id = ?', [puntos, usuarioId]);
@@ -38,10 +31,6 @@ async function moverPuntos(conn, usuarioId, puntos, concepto, cuponId = null) {
   );
 }
 
-/**
- * Aprueba una evidencia: valida disponibilidad de la campaña, emite el cupón,
- * otorga puntos y notifica al cliente. Debe ejecutarse dentro de una transacción.
- */
 async function aprobarEvidencia(conn, evidenciaId, revisorId) {
   const [[ev]] = await conn.query('SELECT * FROM evidencias WHERE id = ? FOR UPDATE', [evidenciaId]);
   if (!ev) throw new HttpError(404, 'Evidencia no encontrada');

@@ -1,7 +1,3 @@
-// QUÉ HACE ESTE ARCHIVO
-// Pestaña "Mis cupones" del cliente: lista sus cupones separados por estado
-// (disponibles, utilizados y vencidos) y abre el QR de cada uno.
-
 import 'package:flutter/material.dart';
 
 import '../../models/models.dart';

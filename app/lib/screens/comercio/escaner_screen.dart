@@ -1,12 +1,8 @@
-// QUÉ HACE ESTE ARCHIVO
-// Abre la cámara para leer un código QR y devuelve el texto leído.
-
 import 'package:flutter/material.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 
 import '../../theme.dart';
 
-/// Lector de códigos QR. Devuelve el texto leído con Navigator.pop.
 class EscanerScreen extends StatefulWidget {
   const EscanerScreen({super.key});
 

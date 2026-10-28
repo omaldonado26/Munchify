@@ -1,7 +1,3 @@
-// QUÉ HACE ESTE ARCHIVO
-// Lista de notificaciones dentro de la app y el ícono de campana con el contador
-// de no leídas. Lo usan tanto el cliente como el comercio.
-
 import 'package:flutter/material.dart';
 
 import '../../models/models.dart';
@@ -78,7 +74,6 @@ class NotificacionesScreen extends StatelessWidget {
   }
 }
 
-/// Ícono de campana con contador de notificaciones no leídas.
 class BotonNotificaciones extends StatefulWidget {
   const BotonNotificaciones({super.key});
 
@@ -93,7 +88,6 @@ class _BotonNotificacionesState extends State<BotonNotificaciones> {
   void initState() {
     super.initState();
     _actualizar();
-    // Al llegar un push con la app abierta se actualiza el contador.
     PushService.instancia.recibidos.addListener(_actualizar);
     refrescoDeDatos.addListener(_actualizar);
   }

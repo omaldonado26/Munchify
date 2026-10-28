@@ -1,8 +1,3 @@
-// QUÉ HACE ESTE ARCHIVO
-// Rutas de cuentas y sesión (/api/auth): registro, inicio de sesión con correo y
-// contraseña, inicio de sesión con Google, ver y editar el perfil, y registrar el
-// teléfono para recibir notificaciones push. Aquí se crea el JWT de la sesión.
-
 const router = require('express').Router();
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
@@ -29,11 +24,6 @@ async function perfil(id) {
   return u;
 }
 
-/**
- * POST /api/auth/registro
- * Body cliente:  { nombre, email, password, telefono?, usuario_instagram? }
- * Body comercio: { ..., rol: 'comercio', comercio: { nombre, categoria_id, direccion?, telefono?, instagram? } }
- */
 router.post('/registro', async (req, res) => {
   const b = req.body || {};
   requerir(b, ['nombre', 'email', 'password']);
@@ -73,7 +63,6 @@ router.post('/registro', async (req, res) => {
   res.status(201).json({ token: firmar(usuario), usuario });
 });
 
-/** POST /api/auth/login { email, password } */
 router.post('/login', async (req, res) => {
   const b = req.body || {};
   requerir(b, ['email', 'password']);
@@ -88,12 +77,6 @@ router.post('/login', async (req, res) => {
   res.json({ token: firmar(usuario), usuario });
 });
 
-/**
- * POST /api/auth/google { idToken }
- * Inicia sesión con una cuenta de Google autenticada en Firebase (la app envía el ID token de Firebase).
- * Si el correo ya existe se entra a esa cuenta (cliente o comercio); si no, se crea una cuenta de cliente.
- * Devuelve el mismo JWT que el login con contraseña.
- */
 router.post('/google', async (req, res) => {
   if (!firebaseAuth) throw new HttpError(503, 'El inicio de sesión con Google no está configurado en el servidor');
   requerir(req.body || {}, ['idToken']);
@@ -112,7 +95,6 @@ router.post('/google', async (req, res) => {
   let nuevo = false;
 
   if (!u) {
-    // Cuenta nueva de cliente. La contraseña es aleatoria: esta persona entra siempre con Google.
     const hash = await bcrypt.hash(crypto.randomBytes(32).toString('hex'), 10);
     const nombre = (datos.name || email.split('@')[0]).slice(0, 120);
     const id = await transaction(async (conn) => {
@@ -133,12 +115,10 @@ router.post('/google', async (req, res) => {
   res.status(nuevo ? 201 : 200).json({ token: firmar(usuario), usuario });
 });
 
-/** GET /api/auth/me */
 router.get('/me', auth, async (req, res) => {
   res.json(await perfil(req.user.id));
 });
 
-/** PUT /api/auth/me { nombre?, telefono?, usuario_instagram? } */
 router.put('/me', auth, async (req, res) => {
   const b = req.body || {};
   await query(
@@ -149,7 +129,6 @@ router.put('/me', auth, async (req, res) => {
   res.json(await perfil(req.user.id));
 });
 
-/** PUT /api/auth/fcm-token { token } — registra el token de Firebase del dispositivo */
 router.put('/fcm-token', auth, async (req, res) => {
   await query('UPDATE usuarios SET fcm_token = ? WHERE id = ?', [req.body?.token || null, req.user.id]);
   res.json({ ok: true });

@@ -1,7 +1,3 @@
-// QUÉ HACE ESTE ARCHIVO
-// Pestaña "Explorar" del cliente: lista las promociones vigentes, con buscador,
-// filtro por categoría y el resumen de puntos y promociones por vencer.
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -12,7 +8,6 @@ import '../../utils/formatos.dart';
 import '../../widgets/comunes.dart';
 import 'campana_detalle_screen.dart';
 
-/// Listado de promociones vigentes con búsqueda y filtro por categoría.
 class ExplorarScreen extends StatefulWidget {
   const ExplorarScreen({super.key});
 
@@ -26,7 +21,7 @@ class _ExplorarScreenState extends State<ExplorarScreen> {
   List<Categoria> _categorias = [];
   int? _categoriaId;
   String _busqueda = '';
-  int _version = 0; // fuerza recarga del listado
+  int _version = 0;
 
   @override
   void initState() {
@@ -42,7 +37,6 @@ class _ExplorarScreenState extends State<ExplorarScreen> {
     super.dispose();
   }
 
-  /// Promociones que vencen en los próximos 3 días.
   int _porVencer(List<Campana> lista) {
     final limite = DateTime.now().add(const Duration(days: 3));
     return lista.where((c) => c.fin != null && !c.fin!.isAfter(limite)).length;

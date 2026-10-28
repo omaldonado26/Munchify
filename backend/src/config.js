@@ -1,12 +1,6 @@
-// QUÉ HACE ESTE ARCHIVO
-// Lee la configuración del archivo .env (puerto, datos de MySQL, clave y duración
-// del JWT, ruta de la cuenta de Firebase) y la deja disponible para el resto del servidor.
-// Aquí no hay secretos escritos: los valores reales viven en .env, que no se sube a GitHub.
-
 require('dotenv').config({ quiet: true });
 const path = require('path');
 
-// La ruta de la cuenta de servicio puede ser relativa a la carpeta backend/.
 const cuentaFirebase = process.env.FIREBASE_SERVICE_ACCOUNT
   ? path.resolve(__dirname, '..', process.env.FIREBASE_SERVICE_ACCOUNT)
   : '';

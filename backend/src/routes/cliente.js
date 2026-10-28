@@ -1,7 +1,3 @@
-// QUÉ HACE ESTE ARCHIVO
-// Rutas que usa el cliente (/api): sus cupones, su historial, el catálogo de
-// recompensas, el canje de puntos por una recompensa y sus notificaciones.
-
 const router = require('express').Router();
 const { query, transaction } = require('../db/pool');
 const { auth, role } = require('../middleware/auth');
@@ -11,9 +7,6 @@ const { notificar } = require('../services/notificaciones');
 
 router.use(auth);
 
-/* ------------------------------ Cupones ----------------------------- */
-
-/** GET /api/cupones?estado=activo — mis cupones */
 router.get('/cupones', role('cliente'), async (req, res) => {
   const params = [req.user.id];
   let filtro = '';
@@ -33,9 +26,6 @@ router.get('/cupones', role('cliente'), async (req, res) => {
   res.json(rows);
 });
 
-/* ----------------------------- Historial ---------------------------- */
-
-/** GET /api/historial — participaciones, cupones y movimientos de puntos del cliente */
 router.get('/historial', role('cliente'), async (req, res) => {
   const [participaciones, cupones, puntos, [resumen]] = await Promise.all([
     query(
@@ -66,9 +56,6 @@ router.get('/historial', role('cliente'), async (req, res) => {
   res.json({ resumen, participaciones, cupones, puntos });
 });
 
-/* ---------------------------- Recompensas --------------------------- */
-
-/** GET /api/recompensas — catálogo de recompensas canjeables con puntos */
 router.get('/recompensas', async (_req, res) => {
   const rows = await query(
     `SELECT r.id, r.nombre, r.descripcion, r.costo_puntos, r.stock, r.vigencia_dias,
@@ -79,7 +66,6 @@ router.get('/recompensas', async (_req, res) => {
   res.json(rows);
 });
 
-/** POST /api/recompensas/:id/canjear — cambia puntos por un cupón de recompensa */
 router.post('/recompensas/:id/canjear', role('cliente'), async (req, res) => {
   const resultado = await transaction(async (conn) => {
     const [[rec]] = await conn.query('SELECT * FROM recompensas WHERE id=? AND activa=1 FOR UPDATE', [req.params.id]);
@@ -106,8 +92,6 @@ router.post('/recompensas/:id/canjear', role('cliente'), async (req, res) => {
   });
   res.status(201).json(resultado);
 });
-
-/* --------------------------- Notificaciones ------------------------- */
 
 router.get('/notificaciones', async (req, res) => {
   const rows = await query(

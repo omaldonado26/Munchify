@@ -1,7 +1,3 @@
-// QUÉ HACE ESTE ARCHIVO
-// Pestaña "Validar" del comercio: muestra las evidencias que enviaron los clientes
-// y permite aprobarlas (se genera el cupón) o rechazarlas con un motivo.
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -12,7 +8,6 @@ import '../../theme.dart';
 import '../../utils/formatos.dart';
 import '../../widgets/comunes.dart';
 
-/// Revisión de evidencias enviadas por los clientes (aprobar / rechazar).
 class EvidenciasScreen extends StatefulWidget {
   final int? campanaId;
   const EvidenciasScreen({super.key, this.campanaId});

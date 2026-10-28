@@ -1,11 +1,3 @@
-// QUÉ HACE ESTE ARCHIVO
-// Prueba automática del recorrido principal: registra usuarios, crea una campaña,
-// envía una evidencia, la aprueba y canjea el cupón, para confirmar que el servidor
-// funciona de principio a fin (npm run test:smoke).
-
-// Prueba de extremo a extremo del flujo principal de Munchify.
-// Requiere la API corriendo (npm start) con los datos demo (npm run db:seed).
-// Uso: npm run test:smoke   (o API_URL=http://host:3000/api npm run test:smoke)
 const API = process.env.API_URL || 'http://localhost:3000/api';
 let ok = 0;
 
@@ -24,7 +16,6 @@ async function api(method, path, { token, body, form } = {}) {
   return { status: res.status, data };
 }
 
-// PNG de 1x1 para simular una captura
 const PNG = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==', 'base64');
 
 (async () => {
@@ -34,7 +25,6 @@ const PNG = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR
   const salud = await api('GET', '/salud');
   check(salud.status === 200, 'API responde');
 
-  // 1. Registro de cliente y comercio
   const cli = await api('POST', '/auth/registro', {
     body: { nombre: 'Cliente Prueba', email: `cli${sufijo}@test.hn`, password: '123456', usuario_instagram: '@cli' },
   });
@@ -56,11 +46,9 @@ const PNG = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR
   const badLogin = await api('POST', '/auth/login', { body: { email: `cli${sufijo}@test.hn`, password: 'mala' } });
   check(badLogin.status === 401, 'login con contraseña incorrecta falla');
 
-  // 2. Roles
   const noPermiso = await api('POST', '/campanas', { token: tCli, body: {} });
   check(noPermiso.status === 403, 'un cliente no puede crear campañas');
 
-  // 3. Comercio crea campaña (manual, 2 cupones)
   const hoy = new Date().toISOString().slice(0, 10);
   const fin = new Date(Date.now() + 10 * 864e5).toISOString().slice(0, 10);
   const camp = await api('POST', '/campanas', {
@@ -78,7 +66,6 @@ const PNG = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR
   const notifs = await api('GET', '/notificaciones', { token: tCli });
   check(notifs.data.items.some((n) => n.tipo === 'promocion'), 'cliente recibe notificación de nueva promoción');
 
-  // 4. Evidencia
   const sinArchivo = await api('POST', `/campanas/${campId}/evidencias`, { token: tCli, form: (() => { const f = new FormData(); f.append('enlace', 'https://ig.com/x'); return f; })() });
   check(sinArchivo.status === 400, 'exige captura cuando la campaña lo requiere');
 
@@ -93,7 +80,6 @@ const PNG = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR
   const ev2 = await api('POST', `/campanas/${campId}/evidencias`, { token: tCli, form: f2 });
   check(ev2.status === 409, 'no permite participar dos veces');
 
-  // 5. Comercio valida
   const pend = await api('GET', '/comercio/evidencias?estado=pendiente', { token: tCom });
   check(pend.data.length === 1 && pend.data[0].archivo, 'comercio ve la evidencia pendiente con captura');
 
@@ -113,7 +99,6 @@ const PNG = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR
   const lista2 = await api('GET', '/campanas', { token: tCli });
   check(!lista2.data.some((c) => c.id === campId), 'campaña agotada ya no aparece');
 
-  // 6. Canje
   const misCupones = await api('GET', '/cupones', { token: tCli });
   check(misCupones.data.some((c) => c.codigo === codigo && c.estado === 'activo'), 'cupón aparece en "mis cupones"');
 
@@ -128,12 +113,10 @@ const PNG = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR
   const canje2 = await api('POST', '/comercio/cupones/canjear', { token: tCom, body: { codigo } });
   check(canje2.status === 409, 'evita reutilización del cupón');
 
-  // 7. Métricas
   const met = await api('GET', '/comercio/metricas', { token: tCom });
   check(met.data.resumen.cupones_emitidos === 1 && met.data.resumen.cupones_canjeados === 1 && met.data.resumen.tasa_canje === 100,
     'métricas del comercio correctas');
 
-  // 8. Recompensas con puntos
   const rec = await api('POST', '/comercio/recompensas', { token: tCom, body: { nombre: 'Refresco gratis', costo_puntos: 30, stock: 1 } });
   check(rec.status === 201, 'comercio crea recompensa');
   const canjeRec = await api('POST', `/recompensas/${rec.data.id}/canjear`, { token: tCli });
@@ -141,12 +124,10 @@ const PNG = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR
   const canjeRec2 = await api('POST', `/recompensas/${rec.data.id}/canjear`, { token: tCli });
   check(canjeRec2.status === 409, 'no permite canjear sin stock/puntos');
 
-  // 9. Historial
   const hist = await api('GET', '/historial', { token: tCli });
   check(hist.data.resumen.cupones_obtenidos === 2 && hist.data.resumen.cupones_utilizados === 1 && hist.data.puntos.length === 2,
     'historial con participaciones, cupones y puntos');
 
-  // 10. Validación automática (campaña demo "Café gratis por tu reseña")
   const auto = lista.data.find((c) => c.validacion_automatica === 1);
   if (auto) {
     const fa = new FormData();

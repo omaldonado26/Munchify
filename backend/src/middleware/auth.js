@@ -1,14 +1,8 @@
-// QUÉ HACE ESTE ARCHIVO
-// Es el "guardia" de las rutas protegidas. Revisa el JWT que envía la app, carga los
-// datos del usuario (y de su comercio, si lo tiene) y, con role(), permite restringir
-// una ruta a ciertos roles: cliente, comercio o admin.
-
 const jwt = require('jsonwebtoken');
 const config = require('../config');
 const { query } = require('../db/pool');
 const { HttpError } = require('../utils');
 
-/** Verifica el token JWT y carga el usuario (y su comercio, si aplica) en req.user. */
 async function auth(req, _res, next) {
   const header = req.headers.authorization || '';
   const token = header.startsWith('Bearer ') ? header.slice(7) : null;
@@ -32,7 +26,6 @@ async function auth(req, _res, next) {
   next();
 }
 
-/** Restringe la ruta a uno o varios roles. */
 function role(...roles) {
   return (req, _res, next) => {
     if (!roles.includes(req.user.rol)) throw new HttpError(403, 'No tienes permiso para esta acción');

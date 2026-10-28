@@ -1,8 +1,3 @@
-// QUÉ HACE ESTE ARCHIVO
-// Rutas de promociones (/api/campanas): listar las vigentes, ver el detalle, crear,
-// editar y pausar campañas (comercio), y enviar la evidencia de participación (cliente).
-// Al crear una campaña se avisa por notificación push a todos los clientes.
-
 const router = require('express').Router();
 const { query, transaction } = require('../db/pool');
 const { auth, role } = require('../middleware/auth');
@@ -29,10 +24,6 @@ const VIGENTE = `c.estado='activa' AND CURDATE() BETWEEN c.fecha_inicio AND c.fe
 
 router.use(auth);
 
-/**
- * GET /api/campanas?categoria_id=&q=
- * Promociones vigentes (para clientes). Incluye el estado de participación del usuario.
- */
 router.get('/', async (req, res) => {
   const where = [VIGENTE];
   const params = [req.user.id];
@@ -56,7 +47,6 @@ router.get('/', async (req, res) => {
   res.json(rows);
 });
 
-/** GET /api/campanas/:id — detalle + mi evidencia/cupón (si soy cliente) */
 router.get('/:id', async (req, res) => {
   const [camp] = await query(`SELECT ${CAMPOS_CAMPANA} ${JOINS} WHERE c.id = ?`, [req.params.id]);
   if (!camp) throw new HttpError(404, 'Campaña no encontrada');
@@ -88,7 +78,6 @@ function validarCampana(b) {
   }
 }
 
-/** POST /api/campanas — crea una campaña (comercio) y avisa a los clientes */
 router.post('/', role('comercio'), async (req, res) => {
   const b = req.body || {};
   validarCampana(b);
@@ -103,7 +92,6 @@ router.post('/', role('comercio'), async (req, res) => {
     [...datosCampana(b), req.user.comercio_id]
   );
 
-  // Notificación masiva de nueva promoción a los clientes (in-app + push)
   await notificarAClientes(`Nueva promo en ${co.nombre}`, `${b.titulo}: ${b.beneficio}`);
 
   const [camp] = await query(`SELECT ${CAMPOS_CAMPANA} ${JOINS} WHERE c.id=?`, [r.insertId]);
@@ -119,7 +107,6 @@ async function campanaPropia(req) {
   return camp;
 }
 
-/** PUT /api/campanas/:id — edita la campaña */
 router.put('/:id', role('comercio', 'admin'), async (req, res) => {
   const actual = await campanaPropia(req);
   const b = { ...actual, ...req.body };
@@ -138,7 +125,6 @@ router.put('/:id', role('comercio', 'admin'), async (req, res) => {
   res.json(camp);
 });
 
-/** PATCH /api/campanas/:id/estado { estado: activa|pausada|finalizada } */
 router.patch('/:id/estado', role('comercio', 'admin'), async (req, res) => {
   const camp = await campanaPropia(req);
   const estado = req.body?.estado;
@@ -147,11 +133,6 @@ router.patch('/:id/estado', role('comercio', 'admin'), async (req, res) => {
   res.json({ id: camp.id, estado });
 });
 
-/**
- * POST /api/campanas/:id/evidencias  (multipart/form-data)
- * Campos: captura (archivo imagen), enlace, comentario
- * El cliente registra la evidencia de su acción en redes sociales.
- */
 router.post('/:id/evidencias', role('cliente'), upload.single('captura'), async (req, res) => {
   const b = req.body || {};
   const [camp] = await query(`SELECT c.* FROM campanas c WHERE c.id=? AND ${VIGENTE}`, [req.params.id]);

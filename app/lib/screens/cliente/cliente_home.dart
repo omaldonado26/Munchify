@@ -1,7 +1,3 @@
-// QUÉ HACE ESTE ARCHIVO
-// Pantalla principal del cliente: la barra inferior con sus pestañas
-// (explorar, mis cupones, recompensas y perfil) y la barra superior con el logo.
-
 import 'package:flutter/material.dart';
 
 import '../../widgets/comunes.dart';
@@ -12,7 +8,6 @@ import 'mis_cupones_screen.dart';
 import 'perfil_screen.dart';
 import 'recompensas_screen.dart';
 
-/// Pantalla principal del cliente con navegación inferior.
 class ClienteHome extends StatefulWidget {
   const ClienteHome({super.key});
 
@@ -32,7 +27,7 @@ class _ClienteHomeState extends State<ClienteHome> {
       const PerfilScreen(),
     ];
     return Scaffold(
-      extendBody: true, // el contenido pasa por debajo de la barra de cristal
+      extendBody: true,
       appBar: AppBar(
         titleSpacing: 16,
         title: const MunchifyLogo(alto: 22),

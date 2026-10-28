@@ -1,13 +1,8 @@
-// QUÉ HACE ESTE ARCHIVO
-// Pantalla de apertura: anima el logo al abrir la app y luego pasa a la pantalla
-// que corresponda. Se puede saltar tocando la pantalla.
-
 import 'package:flutter/material.dart';
 
 import '../../theme.dart';
 import '../../widgets/logo.dart';
 
-/// Pantalla de apertura: anima el logo y luego muestra [siguiente].
 class SplashScreen extends StatefulWidget {
   final Widget siguiente;
   const SplashScreen({super.key, required this.siguiente});
@@ -19,7 +14,6 @@ class SplashScreen extends StatefulWidget {
 class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderStateMixin {
   late final AnimationController _ctrl = AnimationController(vsync: this, duration: const Duration(milliseconds: 1400));
 
-  // El tenedor entra con rebote y un balanceo; después aparece el nombre.
   late final Animation<double> _escala =
       CurvedAnimation(parent: _ctrl, curve: const Interval(0.0, 0.6, curve: Curves.elasticOut));
   late final Animation<double> _giro = Tween(begin: -0.9, end: 0.0)
@@ -36,7 +30,6 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
     super.didChangeDependencies();
     if (_iniciado) return;
     _iniciado = true;
-    // Si el sistema pide reducir el movimiento, se entra directo a la app.
     if (MediaQuery.disableAnimationsOf(context)) {
       _terminado = true;
       return;
@@ -64,7 +57,6 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
 
   Widget _logoAnimado() {
     const alto = 44.0;
-    // Tocar la pantalla salta la animación.
     return Scaffold(
       key: const ValueKey('splash'),
       backgroundColor: MunchifyColors.oscuro,
@@ -84,7 +76,6 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
                     child: const MunchifyTenedor(alto: alto * 1.25),
                   ),
                 ),
-                // El nombre se despliega hacia la derecha mientras aparece.
                 ClipRect(
                   child: Align(
                     alignment: Alignment.centerLeft,

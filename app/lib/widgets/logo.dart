@@ -1,12 +1,7 @@
-// QUÉ HACE ESTE ARCHIVO
-// El logo de Munchify listo para usar en cualquier pantalla: el tenedor rojo,
-// el nombre y la combinación de ambos.
-
 import 'package:flutter/material.dart';
 
 import '../theme.dart';
 
-/// Tenedor rojo inclinado del logo de Munchify (PNG con fondo transparente).
 class MunchifyTenedor extends StatelessWidget {
   final double alto;
   const MunchifyTenedor({super.key, this.alto = 48});
@@ -19,7 +14,6 @@ class MunchifyTenedor extends StatelessWidget {
   }
 }
 
-/// Logo completo: tenedor + "Munchify". Usa [colorTexto] claro sobre fondos oscuros.
 class MunchifyLogo extends StatelessWidget {
   final double alto;
   final Color colorTexto;
@@ -39,7 +33,6 @@ class MunchifyLogo extends StatelessWidget {
   }
 }
 
-/// Texto "Munchify" del logo.
 class MunchifyNombre extends StatelessWidget {
   final double alto;
   final Color color;

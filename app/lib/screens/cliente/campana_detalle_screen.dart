@@ -1,8 +1,3 @@
-// QUÉ HACE ESTE ARCHIVO
-// Detalle de una promoción para el cliente: explica cómo participar, permite adjuntar
-// la foto o el enlace, compartirla en redes con la marca de agua y enviar la evidencia.
-// Si ya participó, muestra el estado de su evidencia o su cupón.
-
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
@@ -19,7 +14,6 @@ import '../../utils/formatos.dart';
 import '../../widgets/comunes.dart';
 import 'cupon_qr_screen.dart';
 
-/// Detalle de la promoción y registro de la evidencia de participación.
 class CampanaDetalleScreen extends StatefulWidget {
   final int campanaId;
   const CampanaDetalleScreen({super.key, required this.campanaId});
@@ -205,7 +199,6 @@ class _ComoParticipar extends StatelessWidget {
       );
 }
 
-/// Muestra el estado de participación o el formulario de evidencia.
 class _Participacion extends StatefulWidget {
   final Campana campana;
   final VoidCallback onEnviado;
@@ -244,7 +237,6 @@ class _ParticipacionState extends State<_Participacion> {
     }
   }
 
-  /// Abre el menú de compartir del teléfono con la foto marcada y deja copiado un texto para la publicación.
   Future<void> _compartir() async {
     final foto = _captura;
     if (foto == null) return;
@@ -258,8 +250,6 @@ class _ParticipacionState extends State<_Participacion> {
     ].join(' ');
     setState(() => _compartiendo = true);
     try {
-      // Instagram suele descartar el texto que acompaña a la foto: queda en el portapapeles para pegarlo.
-      // Si no se puede copiar (algunos navegadores lo impiden en la versión web), se comparte igual.
       try {
         await Clipboard.setData(ClipboardData(text: texto));
         if (mounted) mostrarMensaje(context, 'Texto copiado. Pégalo en tu publicación.');
@@ -327,7 +317,6 @@ class _ParticipacionState extends State<_Participacion> {
     final cupon = c.miCupon;
 
     if (cupon != null) {
-      // El aviso refleja el estado real del cupón (activo, canjeado o vencido).
       final estadoCupon = cupon['estado'].toString();
       final (colorAviso, iconoAviso, tituloAviso) = switch (estadoCupon) {
         'activo' => (MunchifyColors.exito, Icons.check_circle, '¡Ya tienes tu cupón!'),

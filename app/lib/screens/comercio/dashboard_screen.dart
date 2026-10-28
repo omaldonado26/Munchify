@@ -1,7 +1,3 @@
-// QUÉ HACE ESTE ARCHIVO
-// Pestaña "Panel" del comercio: métricas (campañas activas, participantes, cupones
-// emitidos y canjeados), el gráfico de canjes de la semana y el rendimiento por campaña.
-
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
@@ -12,7 +8,6 @@ import '../../theme.dart';
 import '../../utils/formatos.dart';
 import '../../widgets/comunes.dart';
 
-/// Panel de métricas básicas del comercio.
 class DashboardScreen extends StatelessWidget {
   final VoidCallback onIrAValidar;
   const DashboardScreen({super.key, required this.onIrAValidar});
@@ -133,7 +128,6 @@ class _FilaCampana extends StatelessWidget {
   }
 }
 
-/// Gráfico de barras sencillo (sin librerías externas).
 class _GraficoSemana extends StatelessWidget {
   final List<Map<String, dynamic>> datos;
   const _GraficoSemana({required this.datos});

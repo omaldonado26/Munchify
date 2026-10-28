@@ -1,7 +1,3 @@
-// QUÉ HACE ESTE ARCHIVO
-// Pone la marca de agua de Munchify (logo pequeño, arriba y centrado) sobre una copia
-// de la foto y abre el menú del teléfono para compartirla en Instagram, WhatsApp, etc.
-
 import 'dart:math' as math;
 import 'dart:ui' as ui;
 
@@ -11,8 +7,6 @@ import 'package:share_plus/share_plus.dart';
 
 import '../widgets/logo.dart';
 
-/// Devuelve una copia de la foto con una marca discreta: el logo de Munchify, pequeño y
-/// semitransparente, arriba y centrado. La foto original no se toca.
 Future<Uint8List> ponerMarcaDeAgua(Uint8List foto) async {
   final imagen = await _decodificar(foto);
   final datosLogo = await rootBundle.load(MunchifyTenedor.asset);
@@ -20,7 +14,6 @@ Future<Uint8List> ponerMarcaDeAgua(Uint8List foto) async {
 
   final ancho = imagen.width.toDouble();
   final alto = imagen.height.toDouble();
-  // Todo se mide respecto al lado corto para que la marca se vea igual en fotos verticales y horizontales.
   final base = math.min(ancho, alto);
   final margen = base * 0.05;
 
@@ -28,12 +21,10 @@ Future<Uint8List> ponerMarcaDeAgua(Uint8List foto) async {
   final lienzo = Canvas(grabadora);
   lienzo.drawImage(imagen, Offset.zero, Paint());
 
-  // Sombra muy suave solo detrás del logo, para que se lea en fotos claras sin oscurecer la imagen.
   final altoLogo = base * 0.05;
   final anchoLogo = altoLogo * tenedor.width / tenedor.height;
   final nombre = _texto('Munchify', base * 0.034, ancho);
   final anchoMarca = anchoLogo + base * 0.008 + nombre.width;
-  // Arriba y centrada: Instagram recorta los lados de la foto en las historias, así que una esquina se pierde.
   final centro = Offset(ancho / 2, math.max(alto * 0.13, margen + altoLogo / 2));
   final inicio = centro.dx - anchoMarca / 2;
   lienzo.drawOval(
@@ -43,7 +34,7 @@ Future<Uint8List> ponerMarcaDeAgua(Uint8List foto) async {
       ..maskFilter = MaskFilter.blur(BlurStyle.normal, altoLogo),
   );
 
-  const opacidad = Color(0xD9FFFFFF); // 85 %
+  const opacidad = Color(0xD9FFFFFF);
   lienzo.drawImageRect(
     tenedor,
     Rect.fromLTWH(0, 0, tenedor.width.toDouble(), tenedor.height.toDouble()),
@@ -63,8 +54,6 @@ Future<Uint8List> ponerMarcaDeAgua(Uint8List foto) async {
   return png.buffer.asUint8List();
 }
 
-/// Abre el menú de compartir del teléfono (Instagram, WhatsApp, etc.) con la foto ya marcada.
-/// [texto] acompaña a la foto en las apps que lo aceptan.
 Future<void> compartirFotoConMarca(Uint8List foto, {String? texto}) async {
   final marcada = await ponerMarcaDeAgua(foto);
   await SharePlus.instance.share(

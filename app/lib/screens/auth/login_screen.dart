@@ -1,7 +1,3 @@
-// QUÉ HACE ESTE ARCHIVO
-// Pantalla de inicio de sesión: correo y contraseña, botón "Continuar con Google",
-// enlace para registrarse y el engranaje para cambiar el servidor.
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -52,7 +48,6 @@ class _LoginScreenState extends State<LoginScreen> {
     try {
       await context.read<AuthProvider>().loginConGoogle();
     } on InicioGoogleCancelado {
-      // La persona cerró el selector: no es un error.
     } catch (e) {
       if (mounted) mostrarMensaje(context, e.toString(), error: true);
     } finally {
@@ -162,7 +157,6 @@ class _LoginScreenState extends State<LoginScreen> {
                             ],
                           ),
                           const SizedBox(height: 16),
-                          // Botón secundario: la acción principal de la pantalla sigue siendo "Iniciar sesión".
                           OutlinedButton.icon(
                             onPressed: (_enviando || _conGoogle) ? null : _entrarConGoogle,
                             style: OutlinedButton.styleFrom(
@@ -237,7 +231,6 @@ class _Logo extends StatelessWidget {
   }
 }
 
-/// "G" de Google con sus cuatro colores, dibujada en vectores.
 class _LogoGoogle extends StatelessWidget {
   const _LogoGoogle();
 
@@ -257,13 +250,11 @@ class _PintorG extends CustomPainter {
       ..style = PaintingStyle.stroke
       ..strokeWidth = grosor;
     const pi = 3.1415926535;
-    // Arcos en sentido horario desde la derecha: azul, verde, amarillo, rojo
     void arco(Color c, double inicio, double barrido) => canvas.drawArc(rect, inicio, barrido, false, pincel..color = c);
     arco(const Color(0xFF4285F4), -pi / 4, pi / 4 + 0.05);
     arco(const Color(0xFF34A853), 0, pi * 0.75);
     arco(const Color(0xFFFBBC05), pi * 0.75, pi * 0.5);
     arco(const Color(0xFFEA4335), pi * 1.25, pi * 0.5);
-    // Barra horizontal azul
     canvas.drawRect(
       Rect.fromLTWH(size.width / 2, size.height / 2 - grosor / 2, size.width / 2, grosor),
       Paint()..color = const Color(0xFF4285F4),

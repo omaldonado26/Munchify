@@ -1,7 +1,3 @@
-// QUÉ HACE ESTE ARCHIVO
-// Historial del cliente: sus participaciones, sus cupones y los puntos
-// que ha ganado y gastado.
-
 import 'package:flutter/material.dart';
 
 import '../../models/models.dart';
@@ -10,7 +6,6 @@ import '../../utils/formatos.dart';
 import '../../widgets/comunes.dart';
 import 'cupon_qr_screen.dart';
 
-/// Historial del cliente: participaciones, cupones y movimientos de puntos.
 class HistorialScreen extends StatelessWidget {
   final Map<String, dynamic> datos;
   const HistorialScreen({super.key, required this.datos});
@@ -37,7 +32,6 @@ class HistorialScreen extends StatelessWidget {
         ),
         body: TabBarView(
           children: [
-            // Participaciones
             participaciones.isEmpty
                 ? const VistaVacia(icono: Icons.campaign_outlined, mensaje: 'Aún no has participado en promociones')
                 : ListView.separated(
@@ -56,7 +50,6 @@ class HistorialScreen extends StatelessWidget {
                       );
                     },
                   ),
-            // Cupones
             cupones.isEmpty
                 ? const VistaVacia(icono: Icons.confirmation_number_outlined, mensaje: 'Sin cupones todavía')
                 : ListView.separated(
@@ -75,7 +68,6 @@ class HistorialScreen extends StatelessWidget {
                       );
                     },
                   ),
-            // Puntos
             puntos.isEmpty
                 ? const VistaVacia(icono: Icons.stars_outlined, mensaje: 'Sin movimientos de puntos')
                 : ListView.separated(

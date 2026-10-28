@@ -1,6 +1,3 @@
-// QUÉ HACE ESTE ARCHIVO
-// Muestra un cupón en grande con su código QR, para que el comercio lo escanee.
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:qr_flutter/qr_flutter.dart';
@@ -10,7 +7,6 @@ import '../../theme.dart';
 import '../../utils/formatos.dart';
 import '../../widgets/comunes.dart';
 
-/// Muestra el cupón con su código QR para presentarlo en el establecimiento.
 class CuponQrScreen extends StatelessWidget {
   final Cupon cupon;
   const CuponQrScreen({super.key, required this.cupon});

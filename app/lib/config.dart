@@ -1,18 +1,6 @@
-// QUÉ HACE ESTE ARCHIVO
-// Decide a qué servidor se conecta la app. Usa la dirección con la que se generó
-// el APK (API_URL) o la que la persona guarde desde el engranaje del inicio de sesión.
-
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-/// Configuración del servidor de la API.
-///
-/// Por defecto:
-///  - Emulador Android → http://10.0.2.2:3000 (apunta al localhost de tu PC)
-///  - Web / iOS simulator / escritorio → http://localhost:3000
-///
-/// Se puede cambiar con `flutter run --dart-define=API_URL=http://192.168.1.10:3000`
-/// o desde el ícono de engranaje en la pantalla de inicio de sesión.
 class AppConfig {
   static const String _urlDefinida = String.fromEnvironment('API_URL');
   static const String _clave = 'servidor_api';
@@ -27,10 +15,8 @@ class AppConfig {
     return 'http://localhost:3000';
   }
 
-  /// URL base de la API REST.
   static String get api => '$servidor/api';
 
-  /// Convierte una ruta relativa del servidor (ej. /uploads/x.jpg) en URL completa.
   static String archivo(String? ruta) {
     if (ruta == null || ruta.isEmpty) return '';
     if (ruta.startsWith('http')) return ruta;

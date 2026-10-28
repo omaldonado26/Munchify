@@ -1,7 +1,3 @@
-// QUÉ HACE ESTE ARCHIVO
-// Recibe las notificaciones push de Firebase: pide el permiso, registra el teléfono
-// en el servidor, muestra un aviso si la app está abierta y pide refrescar los datos.
-
 import 'dart:async';
 
 import 'package:firebase_core/firebase_core.dart';
@@ -13,23 +9,15 @@ import '../theme.dart';
 import '../utils/refresco.dart';
 import 'api_service.dart';
 
-/// Recibe los push con la app en segundo plano o cerrada. Android muestra la
-/// notificación por sí solo; este manejador solo debe existir y ser de nivel superior.
 @pragma('vm:entry-point')
 Future<void> _pushEnSegundoPlano(RemoteMessage mensaje) async {}
 
-/// Notificaciones push con Firebase Cloud Messaging.
-///
-/// Solo está configurado para Android (google-services.json). En otras
-/// plataformas no hace nada y la app sigue usando las notificaciones in-app.
 class PushService {
   PushService._();
   static final PushService instancia = PushService._();
 
-  /// Permite mostrar avisos desde fuera del árbol de widgets.
   final GlobalKey<ScaffoldMessengerState> mensajero = GlobalKey<ScaffoldMessengerState>();
 
-  /// Se dispara al llegar un push con la app abierta (p. ej. para refrescar contadores).
   final ValueNotifier<int> recibidos = ValueNotifier(0);
 
   bool _disponible = false;
@@ -43,7 +31,6 @@ class PushService {
       await Firebase.initializeApp();
       FirebaseMessaging.onBackgroundMessage(_pushEnSegundoPlano);
       FirebaseMessaging.onMessage.listen(_mostrarEnPrimerPlano);
-      // Al abrir la app tocando una notificación, se actualizan los datos de las pantallas.
       FirebaseMessaging.onMessageOpenedApp.listen((_) => pedirRefresco());
       _disponible = true;
     } catch (e) {
@@ -51,7 +38,6 @@ class PushService {
     }
   }
 
-  /// Pide permiso, obtiene el token del dispositivo y lo asocia al usuario con sesión.
   Future<void> registrarDispositivo() async {
     if (!_disponible) return;
     try {
@@ -71,7 +57,6 @@ class PushService {
     }
   }
 
-  /// Desvincula el dispositivo del usuario (al cerrar sesión). Requiere que la sesión siga activa.
   Future<void> desvincularDispositivo() async {
     if (!_disponible) return;
     await _tokenSub?.cancel();
@@ -81,10 +66,9 @@ class PushService {
     } catch (_) {}
   }
 
-  // Con la app abierta Android no muestra el push en la bandeja: se avisa dentro de la app.
   void _mostrarEnPrimerPlano(RemoteMessage mensaje) {
     recibidos.value++;
-    pedirRefresco(); // p. ej. aparece la promoción nueva sin salir de la app
+    pedirRefresco();
     final n = mensaje.notification;
     if (n == null) return;
     mensajero.currentState

@@ -1,7 +1,3 @@
-// QUÉ HACE ESTE ARCHIVO
-// Pestaña "Canjear" del comercio: escanea el QR del cliente o escribe el código,
-// muestra los datos del cupón y confirma el canje.
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
@@ -12,7 +8,6 @@ import '../../utils/formatos.dart';
 import '../../widgets/comunes.dart';
 import 'escaner_screen.dart';
 
-/// Canje de cupones en el establecimiento: escanear QR o ingresar el código.
 class CanjearScreen extends StatefulWidget {
   const CanjearScreen({super.key});
 
@@ -68,7 +63,6 @@ class _CanjearScreenState extends State<CanjearScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // La cámara está disponible en Android/iOS (y web con HTTPS).
     final camaraDisponible = kIsWeb ||
         defaultTargetPlatform == TargetPlatform.android ||
         defaultTargetPlatform == TargetPlatform.iOS ||
@@ -150,7 +144,6 @@ class _CanjearScreenState extends State<CanjearScreen> {
   }
 }
 
-/// Hoja inferior con los datos del cupón y el botón para confirmar el canje.
 class _DetalleCupon extends StatefulWidget {
   final Cupon cupon;
   const _DetalleCupon({required this.cupon});

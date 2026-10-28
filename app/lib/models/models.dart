@@ -1,9 +1,3 @@
-// QUÉ HACE ESTE ARCHIVO
-// Define la forma de los datos que llegan del servidor (usuario, campaña, cupón,
-// evidencia, recompensa, notificación, puntos y métricas) y cómo convertir su JSON en objetos.
-
-// Modelos de datos de Munchify. Todos se construyen a partir del JSON de la API.
-
 int _int(dynamic v) {
   if (v == null) return 0;
   if (v is num) return v.toInt();
@@ -85,8 +79,8 @@ class Campana {
   final String redSocial;
   final String tipoEvidencia;
   final bool validacionAutomatica;
-  final String fechaInicio; // YYYY-MM-DD
-  final String fechaFin; // YYYY-MM-DD
+  final String fechaInicio;
+  final String fechaFin;
   final int vigenciaCuponDias;
   final int cantidadDisponible;
   final int cuponesEmitidos;
@@ -98,11 +92,9 @@ class Campana {
   final String? comercioInstagram;
   final String? categoriaNombre;
   final String? miParticipacion;
-  // Contadores (vista del comercio)
   final int participantes;
   final int pendientes;
   final int cuponesCanjeados;
-  // Detalle (vista del cliente)
   final Map<String, dynamic>? miEvidencia;
   final Map<String, dynamic>? miCupon;
 
@@ -350,7 +342,6 @@ class MovimientoPuntos {
       );
 }
 
-/// Métricas del panel del comercio.
 class Metricas {
   final Map<String, dynamic> resumen;
   final List<Map<String, dynamic>> porCampana;

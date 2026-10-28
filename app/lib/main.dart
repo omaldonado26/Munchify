@@ -1,8 +1,3 @@
-// QUÉ HACE ESTE ARCHIVO
-// Es donde arranca la app. Inicia las notificaciones push, aplica el tema oscuro,
-// muestra el logo animado y decide qué pantalla abrir: inicio de sesión, la del
-// cliente o la del comercio, según haya sesión y cuál sea el rol.
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -48,7 +43,6 @@ class _MunchifyAppState extends State<MunchifyApp> with WidgetsBindingObserver {
     super.dispose();
   }
 
-  // Al volver a la app (p. ej. tras tocar una notificación) se actualizan los datos y los puntos.
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state != AppLifecycleState.resumed) return;
@@ -71,10 +65,8 @@ class _MunchifyAppState extends State<MunchifyApp> with WidgetsBindingObserver {
   }
 }
 
-/// Decide qué mostrar según la sesión y el rol del usuario.
 class RaizApp extends StatelessWidget {
   const RaizApp({super.key});
-//hola
   @override
   Widget build(BuildContext context) {
     final auth = context.watch<AuthProvider>();

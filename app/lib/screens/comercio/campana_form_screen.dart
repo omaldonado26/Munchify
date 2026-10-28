@@ -1,7 +1,3 @@
-// QUÉ HACE ESTE ARCHIVO
-// Formulario para crear o editar una campaña: título, beneficio, red social,
-// tipo de evidencia, fechas, cantidad de cupones y puntos que otorga.
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -10,7 +6,6 @@ import '../../services/api_service.dart';
 import '../../utils/formatos.dart';
 import '../../widgets/comunes.dart';
 
-/// Crear o editar una campaña promocional.
 class CampanaFormScreen extends StatefulWidget {
   final Campana? campana;
   const CampanaFormScreen({super.key, this.campana});

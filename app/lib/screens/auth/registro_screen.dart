@@ -1,7 +1,3 @@
-// QUÉ HACE ESTE ARCHIVO
-// Pantalla para crear una cuenta nueva, como cliente o como comercio
-// (en ese caso pide también los datos del negocio).
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -24,7 +20,6 @@ class _RegistroScreenState extends State<RegistroScreen> {
   final _password = TextEditingController();
   final _telefono = TextEditingController();
   final _instagram = TextEditingController();
-  // Datos del comercio
   final _comercioNombre = TextEditingController();
   final _direccion = TextEditingController();
   final _comercioInstagram = TextEditingController();

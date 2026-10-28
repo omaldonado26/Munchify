@@ -1,7 +1,3 @@
-// QUÉ HACE ESTE ARCHIVO
-// Pestaña "Perfil": datos de la cuenta, resumen de actividad, acceso al historial
-// y el botón para cerrar sesión.
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 

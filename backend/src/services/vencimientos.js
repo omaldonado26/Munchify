@@ -1,17 +1,6 @@
-// QUÉ HACE ESTE ARCHIVO
-// Tarea automática que corre cada hora: marca como vencidos los cupones caducados,
-// finaliza las campañas vencidas o agotadas y recuerda a los clientes los cupones
-// que vencen en las próximas 24 horas.
-
 const { query } = require('../db/pool');
 const { notificar } = require('./notificaciones');
 
-/**
- * Tarea periódica:
- *  - marca como vencidos los cupones cuya fecha pasó,
- *  - finaliza campañas vencidas o agotadas,
- *  - avisa a los clientes con cupones que vencen en las próximas 24 h.
- */
 async function procesarVencimientos() {
   const vencidos = await query(
     "SELECT id, usuario_id, codigo, beneficio FROM cupones WHERE estado='activo' AND fecha_vencimiento < NOW()"
@@ -28,7 +17,6 @@ async function procesarVencimientos() {
       WHERE estado <> 'finalizada' AND (fecha_fin < CURDATE() OR cupones_emitidos >= cantidad_disponible)`
   );
 
-  // Recordatorio único: se usa el texto de la notificación para no repetirlo.
   const porVencer = await query(
     `SELECT c.id, c.usuario_id, c.codigo, c.beneficio FROM cupones c
       WHERE c.estado='activo' AND c.fecha_vencimiento BETWEEN NOW() AND DATE_ADD(NOW(), INTERVAL 1 DAY)

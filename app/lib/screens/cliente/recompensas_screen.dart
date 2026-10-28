@@ -1,7 +1,3 @@
-// QUÉ HACE ESTE ARCHIVO
-// Pestaña "Recompensas" del cliente: muestra sus puntos y el catálogo de premios
-// que puede canjear con ellos.
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -12,7 +8,6 @@ import '../../theme.dart';
 import '../../widgets/comunes.dart';
 import 'cupon_qr_screen.dart';
 
-/// Catálogo de recompensas que el cliente puede canjear con sus puntos.
 class RecompensasScreen extends StatefulWidget {
   const RecompensasScreen({super.key});
 
@@ -124,7 +119,6 @@ class _RecompensasScreenState extends State<RecompensasScreen> {
                               '${r.costoPuntos} pts · quedan ${r.stock}',
                             ),
                             isThreeLine: true,
-                            // Botón de contorno: en una lista, un botón rojo relleno por fila compite consigo mismo.
                             trailing: OutlinedButton(
                               onPressed: alcanza ? () => _canjear(r) : null,
                               child: Text(alcanza ? 'Canjear' : 'Faltan ${r.costoPuntos - puntos}'),

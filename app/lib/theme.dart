@@ -1,25 +1,20 @@
-// QUÉ HACE ESTE ARCHIVO
-// Define el aspecto de toda la app: la paleta de colores (negro, blanco y rojo
-// Munchify), la tipografía Manrope y el estilo de botones, tarjetas y campos.
-
 import 'package:flutter/material.dart';
 
-/// Paleta de marca (modo oscuro): negro profundo, texto blanco y rojo Munchify solo como acento.
 class MunchifyColors {
-  static const Color primario = Color(0xFFFF3B3F); // rojo Munchify (tenedor del logo)
+  static const Color primario = Color(0xFFFF3B3F);
   static const Color primarioOscuro = Color(0xFFDC2626);
-  static const Color secundario = Color(0xFFFF8A8C); // rojo claro para acentos secundarios
-  static const Color oscuro = Color(0xFF09090B); // negro profundo de fondo
+  static const Color secundario = Color(0xFFFF8A8C);
+  static const Color oscuro = Color(0xFF09090B);
   static const Color fondo = oscuro;
-  static const Color superficie = Color(0xFF18181B); // tarjetas
-  static const Color superficieAlta = Color(0xFF27272A); // campos de formulario, snackbars
-  static const Color borde = Color(0xFF27272A); // bordes finos de tarjetas y campos
-  static const Color bordeSuave = Color(0x1AFFFFFF); // blanco al 10 %, para superficies de cristal
-  static const Color claro = Color(0xFFFAFAFA); // texto principal
+  static const Color superficie = Color(0xFF18181B);
+  static const Color superficieAlta = Color(0xFF27272A);
+  static const Color borde = Color(0xFF27272A);
+  static const Color bordeSuave = Color(0x1AFFFFFF);
+  static const Color claro = Color(0xFFFAFAFA);
   static const Color exito = Color(0xFF22C55E);
   static const Color alerta = Color(0xFFFBBF24);
   static const Color error = Color(0xFFF87171);
-  static const Color gris = Color(0xFFA1A1AA); // texto secundario
+  static const Color gris = Color(0xFFA1A1AA);
 }
 
 class MunchifyTheme {

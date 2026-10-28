@@ -12,7 +12,6 @@ class MainActivity : FlutterActivity() {
         crearCanalDeAvisos()
     }
 
-    // Canal de alta prioridad para que los push aparezcan como aviso emergente (Android 8+).
     private fun crearCanalDeAvisos() {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return
         val canal = NotificationChannel(

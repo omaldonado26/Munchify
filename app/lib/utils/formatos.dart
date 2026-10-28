@@ -1,7 +1,3 @@
-// QUÉ HACE ESTE ARCHIVO
-// Ayudas de texto: dar formato a fechas ("24 sep 2026", "Vence en 3 días"), traducir
-// los estados y catálogos a palabras legibles, y elegir el color e ícono de cada uno.
-
 import 'package:flutter/material.dart';
 
 import '../theme.dart';
@@ -10,19 +6,14 @@ const _meses = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', '
 
 String _dos(int n) => n.toString().padLeft(2, '0');
 
-/// 24 sep 2026
 String fechaCorta(DateTime? d) => d == null ? '—' : '${d.day} ${_meses[d.month - 1]} ${d.year}';
 
-/// 24 sep 2026, 14:05
 String fechaHora(DateTime? d) => d == null ? '—' : '${fechaCorta(d)}, ${_dos(d.hour)}:${_dos(d.minute)}';
 
-/// Convierte 'YYYY-MM-DD' a '24 sep 2026'.
 String fechaTexto(String? iso) => fechaCorta(iso == null || iso.isEmpty ? null : DateTime.tryParse(iso));
 
-/// DateTime → 'YYYY-MM-DD' (formato que espera la API).
 String fechaIso(DateTime d) => '${d.year}-${_dos(d.month)}-${_dos(d.day)}';
 
-/// "Vence hoy", "Vence en 3 días", "Venció".
 String tiempoRestante(DateTime? fin) {
   if (fin == null) return '';
   final ahora = DateTime.now();
@@ -35,7 +26,6 @@ String tiempoRestante(DateTime? fin) {
   return 'Vence en $dias días';
 }
 
-/// "hace 5 min", "hace 2 h", "hace 3 días"
 String haceTiempo(DateTime? d) {
   if (d == null) return '';
   final diff = DateTime.now().difference(d);
@@ -45,8 +35,6 @@ String haceTiempo(DateTime? d) {
   if (diff.inDays < 30) return 'hace ${diff.inDays} días';
   return fechaCorta(d);
 }
-
-// ---------------------------- Catálogos de texto ----------------------------
 
 const Map<String, String> tiposAccion = {
   'historia': 'Subir una historia',
@@ -115,7 +103,6 @@ IconData iconoCategoria(String? nombreOIcono) {
   }
 }
 
-/// Color asociado a un estado (campaña, evidencia o cupón).
 Color colorEstado(String estado) {
   switch (estado) {
     case 'activa':
